@@ -1,0 +1,4 @@
+source,route_name,start,end,distance_m,duration_s,avg_speed_kmh,max_speed_kmh,outage_duration_s,final_drift_m,drift_pct,target_threshold_pct,meets_target
+field_test_own_vehicle,Mandadam to Vijayawada,Mandadam,Vijayawada,9126.2,745,44.1,57.6,45,138.25,4.8,10.0,True
+field_test_own_vehicle,Mandadam to VIT-AP,Mandadam,VIT-AP,7181.6,571,45.29,56.88,40,208.57,6.2,10.0,True
+field_test_own_vehicle,VIT-AP to Mangalagiri,VIT-AP,Mangalagiri,9808.7,790,44.68,54.0,55,369.2,7.6,10.0,True

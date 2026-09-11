@@ -276,6 +276,14 @@ fun SettingsScreen(
                 onClick = { onNavigateToTechnicalScreen("offline_maps") }
             )
             ModernSubNavCard(
+                title = "GNSS-Denied Simulation Demo",
+                subtitle = "End-to-end blackout journey with IMM-UKF, RBPF & FGO drift comparison",
+                icon = Icons.Default.Science,
+                iconBg = Color(0xFFEFF6FF),
+                iconColor = Color(0xFF2563EB),
+                onClick = { onNavigateToTechnicalScreen("simulation") }
+            )
+            ModernSubNavCard(
                 title = "Developer Diagnostics",
                 subtitle = "Latency, frame rate, heap memory & sensor Hz telemetry",
                 icon = Icons.Default.BugReport,

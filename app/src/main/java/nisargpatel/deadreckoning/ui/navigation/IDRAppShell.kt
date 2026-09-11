@@ -50,6 +50,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector?
     object OfflineMaps : Screen("offline_maps", "Offline Maps")
     object SessionDetail : Screen("session_detail", "Session Detail")
     object Diagnostics : Screen("diagnostics", "Diagnostics")
+    object Simulation : Screen("simulation", "Simulation")
 }
 
 @Composable
@@ -214,7 +215,7 @@ fun IDRAppShell() {
                                 restoreState = true
                             }
                         },
-                        onModeClicked = { navController.navigate(Screen.Diagnostics.route) }
+                        onModeClicked = { navController.navigate(Screen.Simulation.route) }
                     )
                 }
                 composable(Screen.Navigation.route) {
@@ -285,6 +286,9 @@ fun IDRAppShell() {
                 composable(Screen.Diagnostics.route) {
                     val viewModel = viewModel<DiagnosticsViewModel> { DiagnosticsViewModel(repository) }
                     DiagnosticsScreen(viewModel = viewModel)
+                }
+                composable(Screen.Simulation.route) {
+                    SimulationScreen(onBack = { navController.popBackStack() })
                 }
             }
         }

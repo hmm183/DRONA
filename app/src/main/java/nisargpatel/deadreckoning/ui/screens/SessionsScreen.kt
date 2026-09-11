@@ -31,15 +31,16 @@ fun SessionsScreen(
 ) {
     val sessionState by viewModel.sessionState.collectAsState()
     var selectedFilterIndex by remember { mutableIntStateOf(0) }
-    val filterOptions = listOf("All Drives", "Outage Events", "High Precision")
+    val filterOptions = listOf("All Drives", "Field Tests", "Outage Events", "High Precision")
 
-    val totalDistance = sessionState.sessions.sumOf { it.distanceKm }
-    val totalOutages = sessionState.sessions.sumOf { it.outageCount }
+    val totalDistance = sessionState.sessions.sumOf { it.displayDistanceKm }
+    val totalOutages = sessionState.sessions.sumOf { if (it.outageCount > 0) it.outageCount else 1 }
 
     val filteredSessions = remember(sessionState.sessions, selectedFilterIndex) {
         when (selectedFilterIndex) {
-            1 -> sessionState.sessions.filter { it.outageCount > 0 }
-            2 -> sessionState.sessions.filter { it.avgErrorMeters < 5.0 }
+            1 -> sessionState.sessions.filter { it.sessionSource.contains("Field test", ignoreCase = true) || it.routeEndpoints != null }
+            2 -> sessionState.sessions.filter { it.outageCount > 0 || it.outageDurationSeconds > 0 }
+            3 -> sessionState.sessions.filter { it.avgErrorMeters < 5.0 || it.displayDriftPct <= 5.0 }
             else -> sessionState.sessions
         }
     }
@@ -52,7 +53,7 @@ fun SessionsScreen(
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Modern Header
+        // Header
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -67,7 +68,7 @@ fun SessionsScreen(
                     letterSpacing = (-0.5).sp
                 )
                 Text(
-                    text = "Recorded routes & dead reckoning telemetry",
+                    text = "Real field drives & dead reckoning telemetry",
                     color = Color(0xFF64748B),
                     fontSize = 13.sp
                 )
@@ -249,6 +250,9 @@ private fun ModernSessionCard(
     session: NavigationSession,
     onClick: () -> Unit
 ) {
+    val isFieldTest = session.sessionSource.contains("Field test", ignoreCase = true) || session.routeEndpoints != null
+    val meetsTarget = session.meetsTarget && (session.displayDriftPct <= 10.0)
+
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(20.dp),
@@ -261,37 +265,47 @@ private fun ModernSessionCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Header Row: Status badge + Date & time + Chevron
+            // Header Row: Field Test Badge / Status + 10% Target Pill + Chevron
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    if (isFieldTest) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color(0xFFEFF6FF))
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = "FIELD TEST",
+                                color = Color(0xFF2563EB),
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 0.5.sp
+                            )
+                        }
+                    }
+
+                    // 10% Target Pass/Fail Badge
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(
-                                if (session.status.contains("Active", ignoreCase = true)) Color(0xFFEFF6FF)
-                                else Color(0xFFECFDF5)
-                            )
+                            .background(if (meetsTarget) Color(0xFFECFDF5) else Color(0xFFFEF2F2))
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = session.status.uppercase(),
-                            color = if (session.status.contains("Active", ignoreCase = true)) Color(0xFF2563EB)
-                            else Color(0xFF10B981),
-                            fontSize = 11.sp,
+                            text = if (meetsTarget) "PASS (≤10% TARGET)" else "FAIL (>10% TARGET)",
+                            color = if (meetsTarget) Color(0xFF059669) else Color(0xFFDC2626),
+                            fontSize = 10.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = session.dateString,
-                        color = Color(0xFF64748B),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium
-                    )
                 }
 
                 Icon(
@@ -302,7 +316,37 @@ private fun ModernSessionCard(
                 )
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Main Trip Title & Endpoints
+            Text(
+                text = session.displayTitle,
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Black,
+                color = Color(0xFF0F172A),
+                letterSpacing = (-0.3).sp
+            )
+
+            if (session.routeEndpoints != null && !session.routeEndpoints.start.isNullOrBlank()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Place,
+                        contentDescription = null,
+                        tint = Color(0xFF64748B),
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "${session.routeEndpoints.start} → ${session.routeEndpoints.end ?: ""}",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF64748B)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Visual route summary bar
             Row(
@@ -328,52 +372,50 @@ private fun ModernSessionCard(
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = String.format("%.2f km  •  %s", session.distanceKm, session.durationString),
-                        fontSize = 15.sp,
+                        text = String.format("%.2f km  •  %s", session.displayDistanceKm, session.displayDurationString),
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF0F172A)
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "Max error: ${session.maxErrorMeters}m • Avg error: ${session.avgErrorMeters}m",
+                        text = String.format(
+                            "Final Drift: %.1fm (%.1f%%) • Outage: %ds",
+                            session.displayDriftMeters,
+                            session.displayDriftPct,
+                            if (session.outageDurationSeconds > 0) session.outageDurationSeconds else session.drDurationSeconds
+                        ),
                         fontSize = 12.sp,
-                        color = Color(0xFF64748B)
+                        color = if (meetsTarget) Color(0xFF059669) else Color(0xFFDC2626),
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
             HorizontalDivider(color = Color(0xFFF1F5F9), thickness = 1.dp)
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // Footer telemetry pills
+            // Source Attribution Footer
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.WarningAmber,
-                        contentDescription = null,
-                        tint = if (session.outageCount > 0) Color(0xFFF59E0B) else Color(0xFF10B981),
-                        modifier = Modifier.size(14.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = if (session.outageCount > 0) "${session.outageCount} GNSS Outages Bridged" else "Continuous GNSS Fix",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = if (session.outageCount > 0) Color(0xFFB45309) else Color(0xFF047857)
-                    )
-                }
-
                 Text(
-                    text = "DR: ${session.drDurationSeconds}s",
+                    text = session.sessionSource,
                     fontSize = 11.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Normal,
                     color = Color(0xFF64748B)
                 )
+
+                if (session.sessionDateString.isNotBlank()) {
+                    Text(
+                        text = session.sessionDateString,
+                        fontSize = 11.sp,
+                        color = Color(0xFF94A3B8)
+                    )
+                }
             }
         }
     }
