@@ -17,7 +17,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -64,6 +67,7 @@ fun PageHeader(
     subtitle: String,
     icon: ImageVector,
     tint: Color = PrimaryBlue,
+    onBack: (() -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null
 ) {
     Row(
@@ -72,6 +76,24 @@ fun PageHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+            if (onBack != null) {
+                Surface(
+                    shape = CircleShape,
+                    color = Color.White.copy(alpha = 0.08f),
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.12f)),
+                    modifier = Modifier.clickable { onBack() }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = TextPrimary,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .size(20.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+            }
             Surface(
                 shape = RoundedCornerShape(15.dp),
                 color = tint.copy(alpha = 0.12f),

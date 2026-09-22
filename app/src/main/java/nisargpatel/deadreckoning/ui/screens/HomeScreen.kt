@@ -101,6 +101,11 @@ fun HomeScreen(
             onPlanRouteClicked = onStartNavClicked
         )
 
+        // 3b. ISRO PS26168 GNSS-Denied IDR Simulation Quick Action Card
+        GnssSimulationBannerCard(
+            onLaunchSimulation = onModeClicked
+        )
+
         // 4. System Readiness Card
         SystemReadinessCard(
             gnssOnline = gnssState.isAvailable,
@@ -863,6 +868,98 @@ private fun PlanRouteCard(
                             )
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+// -------------------------------------------------------------------------------------
+// 3b. GNSS SIMULATION QUICK ACTION CARD (ISRO PS26168 Direct Access)
+// -------------------------------------------------------------------------------------
+@Composable
+private fun GnssSimulationBannerCard(
+    onLaunchSimulation: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onLaunchSimulation() }
+            .shadow(2.dp, RoundedCornerShape(18.dp)),
+        shape = RoundedCornerShape(18.dp),
+        color = Color.White,
+        border = BorderStroke(1.dp, Color(0xFFE2E8F0))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(42.dp)
+                        .background(Color(0xFFEFF6FF), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AltRoute,
+                        contentDescription = null,
+                        tint = Color(0xFF2563EB),
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "GNSS-Denied Simulation",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF0F172A)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Surface(
+                            color = Color(0xFFDCFCE7),
+                            shape = RoundedCornerShape(4.dp)
+                        ) {
+                            Text(
+                                text = "ISRO PS26168",
+                                color = Color(0xFF16A34A),
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Black,
+                                modifier = Modifier.padding(horizontal = 5.dp, vertical = 1.5.dp)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = "Real-time blackout test • Blue GNSS vs Red DR • Lane tracking",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF64748B),
+                        maxLines = 1
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Surface(
+                shape = CircleShape,
+                color = Color(0xFF2563EB),
+                modifier = Modifier.size(32.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = "Launch",
+                        tint = Color.White,
+                        modifier = Modifier.size(16.dp)
+                    )
                 }
             }
         }

@@ -1,5 +1,5 @@
 package nisargpatel.deadreckoning.ui.screens
-
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -30,8 +30,12 @@ import nisargpatel.deadreckoning.ui.viewmodel.SensorsViewModel
 
 @Composable
 fun SensorsScreen(
-    viewModel: SensorsViewModel
+    viewModel: SensorsViewModel,
+    onBack: (() -> Unit)? = null
 ) {
+    if (onBack != null) {
+        BackHandler { onBack() }
+    }
     val sensorState by viewModel.sensorState.collectAsState()
 
     CommandScreen {
@@ -39,6 +43,7 @@ fun SensorsScreen(
             title = "IMU Console",
             subtitle = "Accelerometer, gyroscope, attitude, and mount health",
             icon = Icons.Default.Sensors,
+            onBack = onBack,
             trailing = {
                 StatusPill(
                     text = if (sensorState.usesRotationVector) "Rotation vector" else "Accel + mag",

@@ -37,7 +37,7 @@ from src.state_projection import StateProjectionPredictor
 RESULTS_DIR = BASE_DIR / "results" / "ppt_graphs"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
-ARTIFACT_DIR = Path(r"C:\Users\Raushan\.gemini\antigravity-ide\brain\1bea647f-dbb2-487c-97db-9f410a1c3b53")
+ARTIFACT_DIR = Path(os.environ.get("ANTIGRAVITY_ARTIFACT_DIR", str(RESULTS_DIR)))
 
 # Styling configuration for presentation slides
 plt.rcParams.update({
@@ -399,7 +399,8 @@ def copy_to_artifacts():
     """Copies all generated graphs to the brain artifact directory for display."""
     if not ARTIFACT_DIR.exists():
         ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
-    
+    if ARTIFACT_DIR.resolve() == RESULTS_DIR.resolve():
+        return
     import shutil
     for img_file in RESULTS_DIR.glob("*.png"):
         dest = ARTIFACT_DIR / img_file.name

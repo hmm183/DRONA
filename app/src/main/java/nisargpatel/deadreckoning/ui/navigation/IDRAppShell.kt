@@ -255,7 +255,7 @@ fun IDRAppShell() {
                 // Technical Secondary Screens
                 composable(Screen.Sensors.route) {
                     val viewModel = viewModel<SensorsViewModel> { SensorsViewModel(repository) }
-                    SensorsScreen(viewModel = viewModel)
+                    SensorsScreen(viewModel = viewModel, onBack = { navController.popBackStack() })
                 }
                 composable(Screen.GNSS.route) {
                     val viewModel = viewModel<GNSSViewModel> { GNSSViewModel(repository) }

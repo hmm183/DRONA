@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
-    <title>MARK-V Neural-Inertial Navigation Launch</title>
+    <title>DRONA SIH NavCore — ISRO PS26168 Intelligent Dead Reckoning Launch</title>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,7 +46,7 @@
       .vignette {
         position: absolute;
         inset: 0;
-        box-shadow: inset 0 0 160px rgba(0, 0, 0, 0.85);
+        box-shadow: inset 0 0 180px rgba(0, 0, 0, 0.9);
         pointer-events: none;
       }
 
@@ -67,145 +67,103 @@
         display: inline-flex;
         align-items: center;
         gap: 10px;
-        padding: 8px 20px;
+        padding: 8px 22px;
         border-radius: 9999px;
         font-family: 'JetBrains Mono', monospace;
-        font-size: 18px;
+        font-size: 17px;
         font-weight: 700;
         letter-spacing: 0.12em;
         text-transform: uppercase;
-        margin-bottom: 24px;
+        margin-bottom: 22px;
       }
 
       .badge-alert {
-        background: rgba(255, 23, 68, 0.16);
+        background: rgba(255, 23, 68, 0.18);
         border: 1px solid #ff1744;
         color: #ff5252;
       }
 
       .badge-success {
-        background: rgba(0, 230, 118, 0.16);
+        background: rgba(0, 230, 118, 0.18);
         border: 1px solid #00e676;
         color: #00e676;
       }
 
       .badge-cyan {
-        background: rgba(0, 229, 255, 0.16);
+        background: rgba(0, 229, 255, 0.18);
         border: 1px solid #00e5ff;
         color: #00e5ff;
       }
 
       .headline-main {
-        font-size: 68px;
+        font-size: 64px;
         font-weight: 800;
-        letter-spacing: -0.02em;
-        line-height: 1.15;
+        letter-spacing: -0.025em;
         text-align: center;
-        max-width: 1400px;
-        color: #ffffff;
+        line-height: 1.15;
+        margin-bottom: 16px;
+        background: linear-gradient(180deg, #ffffff 40%, #cbd5e1 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
       }
 
       .sub-lead {
-        font-size: 26px;
-        font-weight: 400;
+        font-size: 24px;
         color: #94a3b8;
-        margin-top: 18px;
+        font-weight: 500;
         text-align: center;
-        max-width: 1000px;
-        line-height: 1.5;
+        max-width: 960px;
+        line-height: 1.4;
       }
 
-      /* Scene 1: Outage & Failover */
-      #scene-1 .radar-ping {
-        width: 120px;
-        height: 120px;
+      /* Radar ping in Scene 1 */
+      .radar-ping {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
         border: 2px solid #ff1744;
-        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         margin-bottom: 28px;
+        box-shadow: 0 0 50px rgba(255, 23, 68, 0.35);
         position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
       }
 
-      #scene-1 .radar-inner {
-        width: 24px;
-        height: 24px;
-        background: #ff1744;
+      .radar-inner {
+        width: 44px;
+        height: 44px;
         border-radius: 50%;
+        background: #ff1744;
+        box-shadow: 0 0 25px #ff1744;
       }
 
-      /* Scene 2: Tech Architecture Grid */
-      .cards-container {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 36px;
-        width: 1540px;
-        margin-top: 48px;
-      }
-
-      .tech-card {
-        background: rgba(17, 25, 39, 0.85);
-        border: 1px solid rgba(0, 229, 255, 0.22);
-        border-radius: 16px;
-        padding: 38px 32px;
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
-        position: relative;
-        overflow: hidden;
-      }
-
-      .tech-card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #00e5ff, #00e676);
-      }
-
-      .card-chip {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 15px;
-        color: #00e5ff;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        margin-bottom: 14px;
-      }
-
-      .card-title {
-        font-size: 28px;
-        font-weight: 700;
-        color: #ffffff;
-        margin-bottom: 12px;
-        line-height: 1.25;
-      }
-
-      .card-desc {
-        font-size: 18px;
-        color: #94a3b8;
-        line-height: 1.5;
-      }
-
-      /* Scene 3: Live Cockpit Split View */
-      .cockpit-layout {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 80px;
-        width: 1640px;
-      }
-
+      /* 3D Smartphone Device Mockup */
       .phone-wrapper {
+        width: 360px;
+        height: 740px;
+        background: #111726;
+        border-radius: 46px;
+        padding: 12px;
+        border: 3px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 
+          0 25px 60px -10px rgba(0, 0, 0, 0.9),
+          0 0 45px rgba(0, 229, 255, 0.22);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         position: relative;
-        width: 380px;
-        height: 760px;
-        background: #0f172a;
-        border-radius: 48px;
-        padding: 14px;
-        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 50px rgba(0, 230, 118, 0.2);
-        border: 3px solid rgba(0, 230, 118, 0.4);
+        flex-shrink: 0;
+      }
+
+      .phone-notch {
+        width: 110px;
+        height: 22px;
+        background: #000;
+        border-radius: 0 0 14px 14px;
+        position: absolute;
+        top: 12px;
+        z-index: 10;
       }
 
       .phone-screen {
@@ -214,109 +172,86 @@
         border-radius: 36px;
         overflow: hidden;
         background: #000;
+        position: relative;
       }
 
-      .phone-screen img {
+      .phone-screen img, .phone-screen video {
         width: 100%;
         height: 100%;
         object-fit: cover;
+      }
+
+      /* Split Layouts */
+      .split-layout {
+        display: flex;
+        width: 1680px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 60px;
       }
 
       .telemetry-panel {
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 24px;
+        gap: 16px;
       }
 
       .telemetry-row {
-        background: rgba(17, 25, 39, 0.8);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 14px;
-        padding: 24px 28px;
         display: flex;
-        align-items: center;
         justify-content: space-between;
+        align-items: center;
+        padding: 16px 22px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 14px;
+        font-family: 'JetBrains Mono', monospace;
       }
 
       .tel-label {
         font-size: 18px;
         color: #94a3b8;
-        font-weight: 600;
       }
 
       .tel-val {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 28px;
+        font-size: 22px;
         font-weight: 700;
         color: #00e676;
       }
 
-      /* Scene 4: ISRO Benchmark */
-      .benchmark-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 48px;
-        width: 1540px;
-        margin-top: 40px;
-      }
-
-      .bench-box {
-        background: rgba(17, 25, 39, 0.9);
+      /* Benchmark Presentation Grid */
+      .benchmark-image-container {
+        width: 100%;
+        max-width: 1540px;
         border-radius: 20px;
-        padding: 48px 40px;
-        text-align: center;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
+        margin-top: 14px;
       }
 
-      .bench-req {
-        border: 2px dashed rgba(255, 255, 255, 0.2);
+      .benchmark-image-container img {
+        width: 100%;
+        height: auto;
+        display: block;
       }
 
-      .bench-win {
-        border: 2px solid #00e676;
-        box-shadow: 0 0 50px rgba(0, 230, 118, 0.25);
-        background: linear-gradient(180deg, rgba(17, 25, 39, 0.95) 0%, rgba(6, 32, 20, 0.9) 100%);
-      }
-
-      .bench-num {
-        font-size: 96px;
-        font-family: 'JetBrains Mono', monospace;
-        font-weight: 800;
-        line-height: 1;
-        margin: 20px 0;
-      }
-
-      .num-dim {
-        color: #64748b;
-      }
-
-      .num-glow {
-        color: #00e676;
-        text-shadow: 0 0 40px rgba(0, 230, 118, 0.6);
-      }
-
-      .bench-caption {
-        font-size: 22px;
-        color: #cbd5e1;
-        font-weight: 600;
-      }
-
-      /* Scene 5: Outro */
-      #scene-5 .logo-title {
-        font-size: 90px;
+      /* Outro elements */
+      .logo-title {
+        font-size: 88px;
         font-weight: 900;
         letter-spacing: -0.03em;
         background: linear-gradient(135deg, #ffffff 30%, #00e5ff 70%, #00e676 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: 20px;
+        margin-bottom: 18px;
       }
 
-      #scene-5 .outro-tagline {
-        font-size: 32px;
+      .outro-tagline {
+        font-size: 30px;
         color: #cbd5e1;
         font-weight: 600;
-        margin-bottom: 36px;
+        margin-bottom: 34px;
       }
 
       .stack-pills {
@@ -325,9 +260,9 @@
       }
 
       .stack-pill {
-        padding: 10px 24px;
+        padding: 12px 26px;
         background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.16);
         border-radius: 9999px;
         font-family: 'JetBrains Mono', monospace;
         font-size: 16px;
@@ -340,129 +275,168 @@
       id="root"
       data-composition-id="main"
       data-start="0"
-      data-duration="20"
+      data-duration="32"
       data-width="1920"
       data-height="1080"
     >
       <div class="tactical-grid"></div>
       <div class="vignette"></div>
 
-      <!-- Audio Track -->
+      <!-- Background Audio Track -->
       <audio
         id="bgm"
         src="assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3"
         data-start="0"
-        data-duration="20"
+        data-duration="32"
         data-track-index="0"
         data-volume="0.85"
       ></audio>
 
-      <!-- SCENE 1: The Outage Alert (0.0s - 3.5s) -->
+      <!-- SCENE 1: The Outage Threat (0.0s - 3.5s) -->
       <div id="scene-1" class="scene" data-start="0" data-duration="3.5" data-track-index="1">
         <div id="radar-icon" class="radar-ping">
           <div class="radar-inner"></div>
         </div>
-        <div id="s1-badge" class="badge-tag badge-alert">CRITICAL ALERT // SATELLITES: 0</div>
+        <div id="s1-badge" class="badge-tag badge-alert">CRITICAL GNSS OUTAGE // SATELLITES: 0</div>
         <h1 id="s1-title" class="headline-main">GPS SIGNAL LOST</h1>
-        <p id="s1-lead" class="sub-lead">Tunnels • Canyons • Jamming Environments</p>
-        <div id="s1-failover" class="badge-tag badge-success" style="opacity: 0; margin-top: 36px;">
-          FAILOVER ENGAGED: MARK-V V9 ACTIVE
+        <p id="s1-lead" class="sub-lead">Tunnels • Underpasses • Dense Urban Canyons • EM Jamming</p>
+        <div id="s1-failover" class="badge-tag badge-success" style="opacity: 0; margin-top: 32px;">
+          FAILOVER ENGAGED: ISRO PS26168 DEAD RECKONING ACTIVE
         </div>
       </div>
 
-      <!-- SCENE 2: Tech Architecture (3.5s - 8.5s) -->
+      <!-- SCENE 2: Real Physical Device & Sensor Telemetry (3.5s - 8.5s) -->
       <div id="scene-2" class="scene" data-start="3.5" data-duration="5.0" data-track-index="1">
-        <div class="badge-tag badge-cyan">DEEP-TECH EDGE ARCHITECTURE</div>
-        <h2 class="headline-main">V9 Adaptive Projection PATP</h2>
-        <p class="sub-lead">Continuous on-device vehicle odometry with zero external signals</p>
-        
-        <div class="cards-container">
-          <div id="card-1" class="tech-card">
-            <div class="card-chip">Neural Engine</div>
-            <h3 class="card-title">PATP Transformer</h3>
-            <p class="card-desc">16.9K parameter lightweight polar-adapted model with sub-millisecond on-device latency.</p>
-          </div>
-          <div id="card-2" class="tech-card">
-            <div class="card-chip">State Estimation</div>
-            <h3 class="card-title">Hybrid IMM-UKF</h3>
-            <p class="card-desc">Interacting multiple models + RBPF + sliding-window factor graph optimization.</p>
-          </div>
-          <div id="card-3" class="tech-card">
-            <div class="card-chip">Sensor Fusion</div>
-            <h3 class="card-title">100Hz IMU Kinematics</h3>
-            <p class="card-desc">Raw 6-DoF accelerometer & gyroscope fusion with dynamic bias compensation.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- SCENE 3: The Live Cockpit (8.5s - 14.5s) -->
-      <div id="scene-3" class="scene" data-start="8.5" data-duration="6.0" data-track-index="1">
-        <div class="cockpit-layout">
-          <div id="phone-mockup" class="phone-wrapper">
+        <div class="split-layout">
+          <div id="phone-mockup-s2" class="phone-wrapper">
+            <div class="phone-notch"></div>
             <div class="phone-screen">
-              <img src="assets/images/device_screen.png" alt="MARK-V Live App Screen">
+              <img src="assets/images/screen_cockpit.png" alt="Real Redmi Note 13 Pro+ Calibration Screen">
             </div>
           </div>
           <div class="telemetry-panel">
-            <div class="badge-tag badge-success">LIVE SENSOR TELEMETRY</div>
-            <h2 style="font-size: 48px; font-weight: 800; line-height: 1.2; color: #ffffff;">
-              Tactical Android Cockpit
+            <div class="badge-tag badge-cyan">PHYSICAL HARDWARE VALIDATION</div>
+            <h2 style="font-size: 46px; font-weight: 800; line-height: 1.2; color: #ffffff;">
+              Redmi Note 13 Pro+ 5G
             </h2>
             <p style="font-size: 20px; color: #94a3b8; margin-bottom: 8px;">
-              Real-time vehicle dead reckoning running on consumer mobile hardware.
+              Live on-device sensor pre-drive calibration & attitude estimation without OBD-II.
             </p>
             <div class="telemetry-row">
-              <span class="tel-label">Linear Odometry Velocity</span>
-              <span class="tel-val">18.4 m/s</span>
+              <span class="tel-label">IMU Sampling Rate</span>
+              <span class="tel-val" style="color: #00e5ff;">105 Hz Real-Time</span>
             </div>
             <div class="telemetry-row">
-              <span class="tel-label">Pitch / Roll Attitude</span>
-              <span class="tel-val">-1.2° / +0.4°</span>
+              <span class="tel-label">Chassis Mount Stability</span>
+              <span class="tel-val">99% Locked</span>
             </div>
             <div class="telemetry-row">
-              <span class="tel-label">Navigation Verification</span>
-              <span class="tel-val" style="color: #00e5ff;">130+ Unit Tests PASS</span>
+              <span class="tel-label">Sensor Readiness</span>
+              <span class="tel-val">100% Calibrated</span>
             </div>
             <div class="telemetry-row">
-              <span class="tel-label">Dead-Reckoning Mode</span>
-              <span class="tel-val">V9 PATP + FGO</span>
+              <span class="tel-label">Edge Execution Target</span>
+              <span class="tel-val">Zero External Feeds</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- SCENE 4: ISRO Benchmark Mandate (14.5s - 18.0s) -->
-      <div id="scene-4" class="scene" data-start="14.5" data-duration="3.5" data-track-index="1">
-        <div class="badge-tag badge-alert">ISRO PS26168 BENCHMARK</div>
-        <h2 class="headline-main">Outage Drift Mandate Shattered</h2>
-        
-        <div class="benchmark-grid">
-          <div id="bench-mandate" class="bench-box bench-req">
-            <div class="card-chip" style="color: #94a3b8;">ISRO Mandate Requirement</div>
-            <div class="bench-num num-dim">&lt; 10.0%</div>
-            <div class="bench-caption">Maximum allowable outage drift rate</div>
+      <!-- SCENE 3: Authentic In-App GNSS Blackout Simulation (8.5s - 16.5s) -->
+      <div id="scene-3" class="scene" data-start="8.5" data-duration="8.0" data-track-index="1">
+        <div class="split-layout">
+          <div id="phone-mockup-s3" class="phone-wrapper">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <video id="sim-video" src="assets/videos/sim_live_blackout.mp4" muted autoplay loop playsinline></video>
+            </div>
           </div>
-          <div id="bench-markv" class="bench-box bench-win">
-            <div class="card-chip" style="color: #00e676;">MARK-V Achieved Drift</div>
-            <div class="bench-num num-glow">0.11%</div>
-            <div class="bench-caption">1.44% – 3.69% in real Andhra Pradesh road trips</div>
+          <div class="telemetry-panel">
+            <div class="badge-tag badge-alert">LIVE IN-APP BLACKOUT SIMULATION</div>
+            <h2 style="font-size: 46px; font-weight: 800; line-height: 1.2; color: #ffffff;">
+              Autonomous Outage Bridging
+            </h2>
+            <p style="font-size: 20px; color: #94a3b8; margin-bottom: 8px;">
+              Watch live dead-reckoning (Red) hold lane-level precision when GNSS drops at 35% journey.
+            </p>
+            <div class="telemetry-row">
+              <span class="tel-label">Operational Mode</span>
+              <span class="tel-val" style="color: #ff5252;">GNSS OUTAGE // AI DR</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="tel-label">Hybrid Outage Drift</span>
+              <span class="tel-val">0.91 m (&lt; 2.5%)</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="tel-label">Road Corridor Lock</span>
+              <span class="tel-val">100.0% Bound</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="tel-label">Kinematic Constraint</span>
+              <span class="tel-val">Non-Holonomic Clamped</span>
+            </div>
           </div>
-        </div>
-        
-        <div id="factor-badge" class="badge-tag badge-success" style="font-size: 24px; padding: 12px 36px; margin-top: 36px;">
-          9x BEYOND SPECIFICATION REQUIREMENT
         </div>
       </div>
 
-      <!-- SCENE 5: Mission Outro (18.0s - 20.0s) -->
-      <div id="scene-5" class="scene" data-start="18.0" data-duration="2.0" data-track-index="1">
-        <h1 class="logo-title">MARK-V NAVIGATION</h1>
-        <p class="outro-tagline">When the sky goes dark, navigation continues.</p>
+      <!-- SCENE 4: V9 Adaptive State Projection Inference (16.5s - 22.5s) -->
+      <div id="scene-4" class="scene" data-start="16.5" data-duration="6.0" data-track-index="1">
+        <div class="split-layout">
+          <div id="phone-mockup-s4" class="phone-wrapper">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <img src="assets/images/screen_models_opened.png" alt="Live V9 Models Inference Screen">
+            </div>
+          </div>
+          <div class="telemetry-panel">
+            <div class="badge-tag badge-cyan">ON-DEVICE NEURAL INFERENCE</div>
+            <h2 style="font-size: 46px; font-weight: 800; line-height: 1.2; color: #ffffff;">
+              V9 Adaptive State Projection
+            </h2>
+            <p style="font-size: 20px; color: #94a3b8; margin-bottom: 8px;">
+              PINO-DR deep learning forward velocity prediction + Driving Event classification.
+            </p>
+            <div class="telemetry-row">
+              <span class="tel-label">Neural Architecture</span>
+              <span class="tel-val">16,895 Parameters</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="tel-label">Driving Event Classifier</span>
+              <span class="tel-val">CRUISE / TURN / ACCEL</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="tel-label">Periodic Damping</span>
+              <span class="tel-val">5.0s Soft ES-EKF</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="tel-label">On-Device Latency</span>
+              <span class="tel-val">&lt; 1.2 ms / Step</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCENE 5: ISRO Mandate 5-Scenario Verification with Roundabout (22.5s - 27.5s) -->
+      <div id="scene-5" class="scene" data-start="22.5" data-duration="5.0" data-track-index="1">
+        <div class="badge-tag badge-success">ISRO PS26168 FULL 5-SCENARIO VERIFICATION</div>
+        <h2 class="headline-main" style="font-size: 50px;">Mandate Shattered Across All Maneuvers</h2>
+        <p class="sub-lead" style="font-size: 20px; margin-bottom: 8px;">
+          Motorway • Quick Accel • Hard Brake • Sharp Turns • <strong>Roundabouts Included</strong>
+        </p>
+        <div class="benchmark-image-container">
+          <img src="assets/images/benchmark_bar_chart.png" alt="5-Scenario Benchmark Bar Chart Including Roundabout">
+        </div>
+      </div>
+
+      <!-- SCENE 6: Outro (27.5s - 32.0s) -->
+      <div id="scene-6" class="scene" data-start="27.5" data-duration="4.5" data-track-index="1">
+        <h1 class="logo-title">DRONA SIH NAVCORE</h1>
+        <p class="outro-tagline">When the sky goes dark, seamless navigation continues.</p>
         <div class="stack-pills">
           <div class="stack-pill">ISRO PS26168</div>
-          <div class="stack-pill">V9 PATP ENGINE</div>
-          <div class="stack-pill">KOTLIN • TENSORFLOW LITE</div>
-          <div class="stack-pill">OPEN SOURCE</div>
+          <div class="stack-pill">V9 ADAPTIVE PROJECTION</div>
+          <div class="stack-pill">ANDROID KOTLIN + TFLITE</div>
+          <div class="stack-pill">OPEN SOURCE: github.com/hmm183/DRONA</div>
         </div>
       </div>
     </div>
@@ -487,41 +461,42 @@
       tl.fromTo("#s1-failover", { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }, 1.8);
       tl.to("#scene-1", { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, 3.2);
 
-      // SCENE 2: 3.5s - 8.5s
+      // SCENE 2: 3.5s - 8.5s (Redmi Note 13 Pro+ Phone HUD)
       tl.set("#scene-2", { autoAlpha: 1 }, 3.5);
-      tl.fromTo("#scene-2 .badge-tag", { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4 }, 3.6);
-      tl.fromTo("#scene-2 .headline-main", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 3.8);
-      tl.fromTo("#scene-2 .sub-lead", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 4.1);
-      // Cascade cards on beat grid
-      tl.fromTo("#card-1", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 4.5);
-      tl.fromTo("#card-2", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 5.0);
-      tl.fromTo("#card-3", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 5.5);
+      tl.fromTo("#phone-mockup-s2", { x: -80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 3.7);
+      tl.fromTo("#scene-2 .telemetry-panel", { x: 80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 3.7);
+      tl.fromTo("#scene-2 .telemetry-row", { opacity: 0, x: 25 }, { opacity: 1, x: 0, stagger: 0.18, duration: 0.4, ease: "power2.out" }, 4.3);
       tl.to("#scene-2", { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, 8.2);
 
-      // SCENE 3: 8.5s - 14.5s (beat-locked entry at 8.74s)
+      // SCENE 3: 8.5s - 16.5s (Live In-App Simulation Video)
       tl.set("#scene-3", { autoAlpha: 1 }, 8.5);
-      tl.fromTo("#phone-mockup", { x: -80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 8.74);
-      tl.fromTo(".telemetry-panel", { x: 80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 8.74);
-      tl.fromTo(".telemetry-row", { opacity: 0, x: 30 }, { opacity: 1, x: 0, stagger: 0.2, duration: 0.4, ease: "power2.out" }, 9.3);
-      tl.to("#scene-3", { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, 14.2);
+      tl.fromTo("#phone-mockup-s3", { x: -80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 8.7);
+      tl.fromTo("#scene-3 .telemetry-panel", { x: 80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 8.7);
+      tl.fromTo("#scene-3 .telemetry-row", { opacity: 0, x: 25 }, { opacity: 1, x: 0, stagger: 0.18, duration: 0.4, ease: "power2.out" }, 9.3);
+      tl.to("#scene-3", { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, 16.2);
 
-      // SCENE 4: 14.5s - 18.0s (payoff reveals on 15.29s & 17.47s)
-      tl.set("#scene-4", { autoAlpha: 1 }, 14.5);
-      tl.fromTo("#scene-4 .badge-tag", { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4 }, 14.6);
-      tl.fromTo("#scene-4 .headline-main", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, 14.8);
-      tl.fromTo("#bench-mandate", { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "power2.out" }, 15.1);
-      tl.fromTo("#bench-markv", { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: "back.out(1.8)" }, 15.29); // beat-locked: 15.29s
-      tl.fromTo("#factor-badge", { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }, 17.47); // beat-locked: 17.47s
-      tl.to("#scene-4", { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, 17.7);
+      // SCENE 4: 16.5s - 22.5s (V9 Neural Models Inference)
+      tl.set("#scene-4", { autoAlpha: 1 }, 16.5);
+      tl.fromTo("#phone-mockup-s4", { x: -80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 16.7);
+      tl.fromTo("#scene-4 .telemetry-panel", { x: 80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 16.7);
+      tl.fromTo("#scene-4 .telemetry-row", { opacity: 0, x: 25 }, { opacity: 1, x: 0, stagger: 0.18, duration: 0.4, ease: "power2.out" }, 17.3);
+      tl.to("#scene-4", { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, 22.2);
 
-      // SCENE 5: 18.0s - 20.0s
-      tl.set("#scene-5", { autoAlpha: 1 }, 18.0);
-      tl.fromTo("#scene-5 .logo-title", { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: "power3.out" }, 18.2);
-      tl.fromTo("#scene-5 .outro-tagline", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, 18.6);
-      tl.fromTo(".stack-pill", { opacity: 0, y: 15 }, { opacity: 1, y: 0, stagger: 0.1, duration: 0.3 }, 18.9);
+      // SCENE 5: 22.5s - 27.5s (Full 5-Scenario Benchmark with Roundabout)
+      tl.set("#scene-5", { autoAlpha: 1 }, 22.5);
+      tl.fromTo("#scene-5 .badge-tag", { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4 }, 22.7);
+      tl.fromTo("#scene-5 .headline-main", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, 22.9);
+      tl.fromTo(".benchmark-image-container", { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: "power3.out" }, 23.3);
+      tl.to("#scene-5", { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, 27.2);
 
-      // Audio fade out at the very end
-      tl.to("#bgm", { volume: 0, duration: 1.0 }, 19.0);
+      // SCENE 6: 27.5s - 32.0s (Outro)
+      tl.set("#scene-6", { autoAlpha: 1 }, 27.5);
+      tl.fromTo("#scene-6 .logo-title", { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: "power3.out" }, 27.7);
+      tl.fromTo("#scene-6 .outro-tagline", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, 28.1);
+      tl.fromTo(".stack-pill", { opacity: 0, y: 15 }, { opacity: 1, y: 0, stagger: 0.1, duration: 0.3 }, 28.5);
+
+      // Audio fade out at 31.0s
+      tl.to("#bgm", { volume: 0, duration: 1.0 }, 31.0);
 
       tl.seek(0);
     </script>

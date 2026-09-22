@@ -1,6 +1,7 @@
 package nisargpatel.deadreckoning.ui.screens
 
 import android.graphics.DashPathEffect
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -40,6 +41,7 @@ import java.util.Locale
 fun SimulationScreen(
     onBack: () -> Unit = {}
 ) {
+    BackHandler(onBack = onBack)
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val controller = remember { SimulationController(context, scope) }

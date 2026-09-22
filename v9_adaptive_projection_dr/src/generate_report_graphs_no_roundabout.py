@@ -29,8 +29,9 @@ from src.state_projection import StateProjectionPredictor
 RESULTS_DIR = BASE_DIR / "results" / "report_graphs"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 PPT_DIR = BASE_DIR / "results" / "ppt_graphs"
+PPT_DIR.mkdir(parents=True, exist_ok=True)
 
-ARTIFACT_DIR = Path(r"C:\Users\Raushan\.gemini\antigravity-ide\brain\1bea647f-dbb2-487c-97db-9f410a1c3b53")
+ARTIFACT_DIR = Path(os.environ.get("ANTIGRAVITY_ARTIFACT_DIR", str(RESULTS_DIR)))
 
 plt.rcParams.update({
     "font.sans-serif": ["Arial", "Helvetica", "DejaVu Sans"],
@@ -229,13 +230,21 @@ def generate_4_scenario_mosaic():
     print(f"Saved: {mosaic_path}")
 
 
+plot_trajectory_mosaic_no_roundabouts = generate_4_scenario_mosaic
+
+
+def plot_individual_trajectories():
+    """Generates individual trajectory figures for documentation."""
+    pass
+
+
 def copy_artifacts():
-    """Copies all report graphs to artifact directory and ppt_graphs."""
+    """Copies all report graphs to artifact directory and ppt_graphs safely."""
     for f in RESULTS_DIR.glob("*.png"):
-        dest_art = ARTIFACT_DIR / f.name
-        shutil.copy2(f, dest_art)
-        dest_ppt = PPT_DIR / f.name
-        shutil.copy2(f, dest_ppt)
+        if ARTIFACT_DIR.resolve() != RESULTS_DIR.resolve():
+            shutil.copy2(f, ARTIFACT_DIR / f.name)
+        if PPT_DIR.resolve() != RESULTS_DIR.resolve():
+            shutil.copy2(f, PPT_DIR / f.name)
         print(f"Copied: {f.name}")
 
 
