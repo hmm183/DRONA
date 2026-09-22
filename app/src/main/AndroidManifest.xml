@@ -29,7 +29,7 @@
         android:name=".DeadReckoningApp">
 
         <activity
-            android:name="nisargpatel.deadreckoning.activity.SplashActivity"
+            android:name="drona.deadreckoning.activity.SplashActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
@@ -42,7 +42,7 @@
         </activity>
 
         <activity
-            android:name="nisargpatel.deadreckoning.activity.MainContainerActivity"
+            android:name="drona.deadreckoning.activity.MainContainerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
@@ -50,7 +50,7 @@
         </activity>
 
         <activity
-            android:name="nisargpatel.deadreckoning.activity.StepCountActivity"
+            android:name="drona.deadreckoning.activity.StepCountActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_step_counter"
             android:screenOrientation="portrait"
@@ -64,35 +64,35 @@
             android:exported="false">
         </activity>
         <activity
-            android:name="nisargpatel.deadreckoning.activity.GraphActivity"
+            android:name="drona.deadreckoning.activity.GraphActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_graph"
             android:screenOrientation="portrait"
             android:exported="false">
         </activity>
         <activity
-            android:name="nisargpatel.deadreckoning.activity.HeadingActivity"
+            android:name="drona.deadreckoning.activity.HeadingActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_orientation"
             android:screenOrientation="portrait"
             android:exported="false">
         </activity>
         <activity
-            android:name="nisargpatel.deadreckoning.activity.DataCollectActivity"
+            android:name="drona.deadreckoning.activity.DataCollectActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_data_collection"
             android:screenOrientation="portrait"
             android:exported="false">
         </activity>
         <activity
-            android:name="nisargpatel.deadreckoning.activity.UserActivity"
+            android:name="drona.deadreckoning.activity.UserActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_user"
             android:screenOrientation="portrait"
             android:exported="false">
         </activity>
         <activity
-            android:name="nisargpatel.deadreckoning.activity.UserListActivity"
+            android:name="drona.deadreckoning.activity.UserListActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
@@ -100,35 +100,35 @@
             android:exported="false">
         </activity>
         <activity
-            android:name="nisargpatel.deadreckoning.activity.DebugToolsActivity"
+            android:name="drona.deadreckoning.activity.DebugToolsActivity"
             android:label="@string/title_activity_debug_tools"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
             android:exported="false">
         </activity>
         <activity
-            android:name="nisargpatel.deadreckoning.activity.HistoryActivity"
+            android:name="drona.deadreckoning.activity.HistoryActivity"
             android:label="@string/nav_history"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
             android:exported="false">
         </activity>
         <activity
-            android:name="nisargpatel.deadreckoning.activity.GuideActivity"
+            android:name="drona.deadreckoning.activity.GuideActivity"
             android:label="@string/nav_guide"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
             android:exported="false">
         </activity>
         <activity
-            android:name="nisargpatel.deadreckoning.activity.CalibrationActivity"
+            android:name="drona.deadreckoning.activity.CalibrationActivity"
             android:label="@string/nav_calibrate"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
             android:exported="false">
         </activity>
         <activity
-            android:name="nisargpatel.deadreckoning.activity.MainNavigationActivity"
+            android:name="drona.deadreckoning.activity.MainNavigationActivity"
             android:label="@string/nav_map"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
@@ -136,7 +136,7 @@
         </activity>
 
         <service
-            android:name="nisargpatel.deadreckoning.service.TrackingService"
+            android:name="drona.deadreckoning.service.TrackingService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location" />

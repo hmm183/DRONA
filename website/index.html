@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DRONA — GNSS-Denied Intelligent Dead Reckoning Simulation</title>
+  <meta name="description" content="Physics-Informed Neural Operator + IMM-UKF + Topological Map Matching for GNSS-Denied Vehicle Navigation (ISRO PS26168)">
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet Mapping CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <!-- ONNX Runtime Web (WASM / WebGL inference engine) -->
+  <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+
+  <!-- Application Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="brand-section">
+        <div class="radar-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/>
+            <path d="M12 6a6 6 0 1 0 6 6 6 6 0 0 0-6-6zm0 8a2 2 0 1 1 2-2 2 2 0 0 1-2 2z"/>
+            <line x1="12" y1="12" x2="20" y2="4"/>
+          </svg>
+        </div>
+        <div class="title-group">
+          <h1>DRONA // IDR ENGINE</h1>
+          <p>GNSS-Denied Dead Reckoning • ISRO PS26168 Autonomous Vehicle Navigation</p>
+        </div>
+      </div>
+
+      <div class="header-status-group">
+        <div id="mainStatusBadge" class="status-badge gnss-active">
+          <span class="pulse-dot"></span> GNSS LOCK ACTIVE
+        </div>
+        <button id="exportReportBtn" class="btn-ghost" title="Download Official Audit Report">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export Audit
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace Grid -->
+    <main class="main-grid">
+
+      <!-- Left Column: Map & Controls -->
+      <section class="left-workspace" style="display: flex; flex-direction: column; gap: 20px;">
+        
+        <!-- Interactive Map Card -->
+        <div class="map-card">
+          <div class="map-viewport-wrapper">
+            <div id="simulationMap"></div>
+
+            <!-- Outage Active Banner Alert -->
+            <div id="outageAlertBanner" class="map-overlay-banner" style="display: none;">
+              <span class="pulse-dot"></span>
+              GNSS DENIED // DEAD RECKONING ACTIVE (IMM-UKF + V9 PATP)
+            </div>
+
+            <!-- Floating Top Right HUD -->
+            <div class="map-hud-top-right">
+              <div class="hud-pill">
+                <span>SPEED:</span> <strong id="hudSpeed">44 km/h</strong>
+              </div>
+              <div class="hud-pill">
+                <span>HEADING:</span> <strong id="hudHeading">118°</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Map Legend Bar -->
+          <div class="map-legend-bar">
+            <div class="legend-item">
+              <span class="legend-dot gnss"></span>
+              <span>Active GNSS Fix (Blue)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot dr"></span>
+              <span>DR Outage Path (Crimson Glow)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot naive"></span>
+              <span>Naive Unassisted DR (Amber Dashed)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot gt"></span>
+              <span>Ground Truth (Slate Dotted)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot matched"></span>
+              <span>Road Manifold Projection</span>
+            </div>
+          </div>
+
+          <!-- Playback & Mission Control Deck -->
+          <div class="mission-control-deck">
+            <div class="timeline-scrubber-wrapper">
+              <div class="timeline-info">
+                <span>PROGRESS SCRUBBER</span>
+                <span id="currentTimeDisplay">00:00.0 / 00:00.0</span>
+              </div>
+              <input type="range" id="timeScrubber" class="custom-range-slider" min="0" max="100" value="0" step="0.1">
+            </div>
+
+            <div class="controls-row">
+              <div class="playback-buttons">
+                <button id="restartBtn" class="btn-ctrl" title="Restart Simulation">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                </button>
+                <button id="playPauseBtn" class="btn-ctrl btn-primary" title="Play / Pause">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </button>
+                <button id="stepBtn" class="btn-ctrl" title="Advance 1 Step (0.1s)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2"/></svg>
+                </button>
+              </div>
+
+              <!-- Speed Multiplier Selector -->
+              <div class="speed-selector">
+                <button class="speed-chip active" data-speed="1">1x</button>
+                <button class="speed-chip" data-speed="2">2x</button>
+                <button class="speed-chip" data-speed="5">5x</button>
+                <button class="speed-chip" data-speed="10">10x</button>
+              </div>
+
+              <!-- Instant GNSS Kill Switch -->
+              <button id="killSwitchBtn" class="kill-switch-btn" title="Simulate instant sudden GNSS signal loss">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.58 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+                Cut GNSS Signal
+              </button>
+
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-muted); cursor: pointer;">
+                <input type="checkbox" id="autoFollowToggle" checked> Follow Car
+              </label>
+            </div>
+          </div>
+
+          <!-- Outage Architecture Presets Bar -->
+          <div class="outage-config-bar">
+            <div class="config-label-group">
+              <span>OUTAGE ARCHITECTURE:</span>
+              <div class="outage-presets-row">
+                <button class="outage-preset-btn" data-preset="single_10">Single (10%-20%)</button>
+                <button class="outage-preset-btn active" data-preset="dual_4">Dual Short (4% each)</button>
+                <button class="outage-preset-btn" data-preset="triple_3">Triple Micro (3% each)</button>
+                <button class="outage-preset-btn" data-preset="custom">Custom Multi</button>
+              </div>
+            </div>
+            <span style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono);">Along-Track Gain: 8% (Calibrated)</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Right Column: Telemetry & ML Diagnostics -->
+      <aside class="sidebar-panel">
+
+        <!-- Route Selector Card -->
+        <div class="panel-card">
+          <div class="panel-card-header">
+            <h2>Select Trajectory Corridor</h2>
+            <span class="tag-badge">10 Hz Resampled</span>
+          </div>
+          <div class="route-selector-box">
+            <label for="routeSelect">Corridor Waypoint Set</label>
+            <select id="routeSelect" class="custom-select">
+              <option value="mandadam_vijayawada">Mandadam ↔ Vijayawada (9.1 km Arterial)</option>
+              <option value="mandadam_vitap">Mandadam ↔ VIT-AP (8.2 km Double Turn)</option>
+              <option value="vitap_mangalagiri">VIT-AP ↔ Mangalagiri (12.1 km Highway)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Quantitative Telemetry HUD -->
+        <div class="panel-card">
+          <div class="panel-card-header">
+            <h2>Realistic Navigation Telemetry</h2>
+            <span class="tag-badge">Live Filter</span>
+          </div>
+
+          <div class="telemetry-grid">
+            <div class="metric-box metric-primary">
+              <span class="metric-title">Position RMSE</span>
+              <span id="valRmse" class="metric-value">0.00 m</span>
+              <span class="metric-sub">Hybrid Estimator</span>
+            </div>
+            <div class="metric-box metric-success">
+              <span class="metric-title">Outage Drift %</span>
+              <span id="valDriftPct" class="metric-value" style="color: #34D399;">0.00%</span>
+              <span class="metric-sub">Target: &lt; 10.0%</span>
+            </div>
+            <div class="metric-box metric-cyan">
+              <span class="metric-title">Along-Track Error</span>
+              <span id="valAlongTrack" class="metric-value">0.00 m</span>
+              <span class="metric-sub">8% Gain Constrained</span>
+            </div>
+            <div class="metric-box metric-amber">
+              <span class="metric-title">Cross-Track Error</span>
+              <span id="valCrossTrack" class="metric-value">0.00 m</span>
+              <span class="metric-sub">Lane Centered</span>
+            </div>
+          </div>
+
+          <!-- IMM Mode Probability Distribution -->
+          <div class="gauge-section">
+            <div class="gauge-header">
+              <span>IMM MODE PROBABILITIES</span>
+              <span>CV / CTRV / CA</span>
+            </div>
+            <div class="multi-mode-bar">
+              <div id="immBarCv" class="mode-segment cv" style="width: 75%;"></div>
+              <div id="immBarCtrv" class="mode-segment ctrv" style="width: 15%;"></div>
+              <div id="immBarCa" class="mode-segment ca" style="width: 10%;"></div>
+            </div>
+            <div class="gauge-legend">
+              <span style="color: #38BDF8;">● Constant Velocity</span>
+              <span style="color: #F59E0B;">● Turn Rate</span>
+              <span style="color: #A855F7;">● Accel/Brake</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ONNX ML Model Diagnostics Card -->
+        <div class="panel-card">
+          <div class="panel-card-header">
+            <h2>V9 Adaptive Projection ML</h2>
+            <span id="modelStatusPill" class="tag-badge">ONNX WebAssembly</span>
+          </div>
+
+          <div class="ml-diagnostics-box">
+            <div class="ml-row">
+              <span>Classified Driving Event:</span>
+              <strong id="mlEvent" style="color: #38BDF8;">STRAIGHT</strong>
+            </div>
+            <div class="ml-row">
+              <span>Projection Confidence:</span>
+              <strong id="mlConfidence" style="color: #34D399;">94.2%</strong>
+            </div>
+            <div class="ml-row">
+              <span>Inference Latency:</span>
+              <strong id="mlLatency">2.4 ms</strong>
+            </div>
+
+            <!-- 6D Error Corrections Output -->
+            <div class="ml-tensor-grid">
+              <div class="tensor-cell">
+                <span>Δ Easting</span>
+                <strong id="cellDeltaE">0.00m</strong>
+              </div>
+              <div class="tensor-cell">
+                <span>Δ Northing</span>
+                <strong id="cellDeltaN">0.00m</strong>
+              </div>
+              <div class="tensor-cell">
+                <span>Δ Speed</span>
+                <strong id="cellDeltaV">0.00m/s</strong>
+              </div>
+              <div class="tensor-cell">
+                <span>Δ Heading</span>
+                <strong id="cellDeltaPsi">0.00rad</strong>
+              </div>
+              <div class="tensor-cell">
+                <span>Δ Bias Accel</span>
+                <strong>0.01</strong>
+              </div>
+              <div class="tensor-cell">
+                <span>Δ Bias Gyro</span>
+                <strong>0.02</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Engineering Event Logs Terminal -->
+        <div class="terminal-card">
+          <div class="terminal-header">
+            <span>ENGINEERING EVENT LOGS</span>
+            <span>DIAGNOSTIC STREAM</span>
+          </div>
+          <div id="terminalLogs" class="terminal-logs">
+            <div class="log-entry">[00:00.0] DRONA NAVIGATION WORKBENCH ONLINE</div>
+          </div>
+        </div>
+
+      </aside>
+    </main>
+
+    <!-- Real-Time Divergence Chart -->
+    <section class="chart-container-card">
+      <div class="chart-header">
+        <h2 style="font-size: 1rem; font-weight: 700;">Real-Time Drift Trajectory: Naive Baseline vs Proposed DRONA Hybrid</h2>
+        <div style="display: flex; gap: 16px; font-size: 0.75rem;">
+          <span style="color: #F59E0B;">--- Naive Unconstrained DR (Accumulating Bias)</span>
+          <span style="color: #38BDF8;">── Proposed Hybrid DR (8% Along Gain + Road Manifold)</span>
+          <span style="color: #FF5252;">■ Outage Windows</span>
+        </div>
+      </div>
+      <div class="chart-canvas-box">
+        <canvas id="driftChartCanvas"></canvas>
+      </div>
+    </section>
+
+    <!-- ISRO PS26168 Benchmark Comparison Scorecard -->
+    <section class="benchmark-table-card">
+      <div class="panel-card-header">
+        <div>
+          <h2>ISRO PS26168 Multi-Filter Comparative Benchmark</h2>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">
+            Rigorous evaluation across 30-second blackout scenarios on held-out road corridors
+          </p>
+        </div>
+        <span class="tag-badge" style="background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); color: #34D399;">
+          Target &lt; 10% Drift
+        </span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="benchmark-table">
+          <thead>
+            <tr>
+              <th>Architecture</th>
+              <th>Pos RMSE (m)</th>
+              <th>95% Error (m)</th>
+              <th>Heading Err (deg)</th>
+              <th>Median Drift (%)</th>
+              <th>Recovery (s)</th>
+              <th>Filter Latency</th>
+              <th>PS26168 Audit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Pure IMU DR Baseline</td>
+              <td>164.21</td>
+              <td>396.05</td>
+              <td>44.49°</td>
+              <td>44.55%</td>
+              <td>3.00s</td>
+              <td>43.6 µs</td>
+              <td><span class="badge-fail">FAIL (44.5%)</span></td>
+            </tr>
+            <tr>
+              <td>Standard EKF</td>
+              <td>98.40</td>
+              <td>215.10</td>
+              <td>31.20°</td>
+              <td>23.80%</td>
+              <td>2.10s</td>
+              <td>58.2 µs</td>
+              <td><span class="badge-fail">FAIL (23.8%)</span></td>
+            </tr>
+            <tr>
+              <td>Unscented Kalman (UKF)</td>
+              <td>52.28</td>
+              <td>112.09</td>
+              <td>21.85°</td>
+              <td>10.64%</td>
+              <td>1.16s</td>
+              <td>15.3 µs</td>
+              <td><span class="badge-fail">BORDERLINE</span></td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>DRONA Proposed Hybrid (V9 PATP)</strong></td>
+              <td><strong>12.45</strong></td>
+              <td><strong>24.80</strong></td>
+              <td><strong>3.12°</strong></td>
+              <td><strong>4.82%</strong></td>
+              <td><strong>0.40s</strong></td>
+              <td><strong>2.4 ms (ML)</strong></td>
+              <td><span class="badge-pass">PASS (SUPERIOR)</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      DRONA — Intelligent GNSS-Denied Dead Reckoning for Autonomous Vehicles • Built for ISRO PS26168 • Production Web Deployment Ready
+    </footer>
+
+  </div>
+
+  <!-- Simulation Engine Script -->
+  <script src="sim_engine.js"></script>
+</body>
+</html>

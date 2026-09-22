@@ -1116,10 +1116,10 @@ sdk.dir=C:\\Users\\<Username>\\AppData\\Local\\Android\\Sdk
 ./gradlew testDebugUnitTest
 
 # Run only the 7-filter comparative benchmark
-./gradlew testDebugUnitTest --tests "nisargpatel.deadreckoning.HybridLocalizationBenchmarkTest"
+./gradlew testDebugUnitTest --tests "drona.deadreckoning.HybridLocalizationBenchmarkTest"
 
 # Run only the reroute gating tests
-./gradlew testDebugUnitTest --tests "nisargpatel.deadreckoning.RerouteGatingTest"
+./gradlew testDebugUnitTest --tests "drona.deadreckoning.RerouteGatingTest"
 ```
 
 ### 4. Build Debug APK
@@ -1201,7 +1201,7 @@ NEW-SIM-dead-reck/
 │   │   │   │   │   └── v8_dead_reckoning.onnx            # V8 Inertial DR Graph
 │   │   │   │   └── roads/
 │   │   │   │       └── default_regional_network.json     # Bundled Offline Regional Corridors
-│   │   │   └── java/nisargpatel/deadreckoning/
+│   │   │   └── java/drona/deadreckoning/
 │   │   │       ├── adapter/             # SensorAdapter with Debounce & Gyro Calibration
 │   │   │       ├── core/spec/           # PreprocessingSpec & Contract Definitions
 │   │   │       ├── data/                # LiveNavigationRepository & OfflineRoadNetwork
@@ -1217,7 +1217,7 @@ NEW-SIM-dead-reck/
 │   │   │       ├── simulation/          # Interactive GNSS-Denied Simulation Subsystem
 │   │   │       ├── ui/                  # Jetpack Compose UI (HUD, Speedometer, Screens)
 │   │   │       └── util/                # RouteRerouteGating & OSRMRouteFetcher
-│   │   └── test/java/nisargpatel/deadreckoning/  # Automated Unit & Benchmark Tests
+│   │   └── test/java/drona/deadreckoning/  # Automated Unit & Benchmark Tests
 │   │       ├── V9AdaptiveProjectionEngineTest.kt # v9 Checkpoint, Gating & ES-EKF Suite
 │   │       ├── BlackoutAblationTest.kt           # IDR-V1 vs V8 Outage Ablation
 │   │       ├── PinoBlackoutAblationTest.kt       # PINO-DR v3 Outage Ablation

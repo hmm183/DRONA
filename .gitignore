@@ -21,3 +21,5 @@ app/build
 __pycache__/
 *.py[cod]
 node_modules/
+scratch/
+brag-output/scratch_frame_*.png

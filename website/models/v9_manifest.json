@@ -1,0 +1,78 @@
+{
+  "model": "v9 Adaptive Projection Dead Reckoning",
+  "architecture": "DepthwiseSeparableConv1D + GRU + Context MLP (Dual Head)",
+  "deployment_status": "v9 Adaptive Projection DR Production",
+  "preprocessing_version": "v9-projection",
+  "parameters": 16895,
+  "sha256": "e7624751638df1f3a74006a41be14050d9baba0825047fd01cdb5a472b1eab8c",
+  "input_sequence": {
+    "name": "x_seq",
+    "shape": [
+      50,
+      8
+    ],
+    "channels": [
+      "a_fwd",
+      "a_lat",
+      "w_yaw",
+      "speed_norm",
+      "centripetal_acc",
+      "centripetal_residual",
+      "delta_psi_step",
+      "jerk"
+    ],
+    "sample_rate_hz": 10.0,
+    "window_seconds": 5.0
+  },
+  "input_context": {
+    "name": "x_ctx",
+    "dim": 12,
+    "features": [
+      "discrepancy_m_scaled",
+      "discrepancy_speed_scaled",
+      "discrepancy_yaw_scaled",
+      "current_speed_scaled",
+      "event_onehot_0_stop",
+      "event_onehot_1_high_rattle",
+      "event_onehot_2_roundabout",
+      "event_onehot_3_turn",
+      "event_onehot_4_accel",
+      "event_onehot_5_brake",
+      "event_onehot_6_straight",
+      "event_onehot_7_cruise"
+    ]
+  },
+  "outputs": {
+    "delta_x": {
+      "dim": 6,
+      "states": [
+        "delta_E",
+        "delta_N",
+        "delta_v",
+        "delta_psi",
+        "delta_ba",
+        "delta_bg"
+      ]
+    },
+    "conf": {
+      "dim": 1,
+      "range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "checkpoint_interval_steps": 50,
+  "checkpoint_interval_seconds": 5.0,
+  "min_confidence_gate": 0.2,
+  "adaptive_thresholds_m": {
+    "STOP": 2.0,
+    "STRAIGHT": 5.0,
+    "CRUISE": 5.0,
+    "ACCEL": 6.0,
+    "BRAKE": 6.0,
+    "TURN": 8.0,
+    "ROUNDABOUT_CANDIDATE": 10.0,
+    "HIGH_RATTLE": 12.0
+  }
+}

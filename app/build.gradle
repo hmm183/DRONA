@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'nisargpatel.deadreckoning'
+    namespace 'drona.deadreckoning'
     compileSdk 34
 
     defaultConfig {
-        applicationId "nisargpatel.deadreckoning"
+        applicationId "drona.deadreckoning"
         minSdk 23
         targetSdk 34
         versionCode 1

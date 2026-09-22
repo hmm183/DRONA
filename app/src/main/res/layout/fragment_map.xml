@@ -455,7 +455,7 @@
                     android:textStyle="bold"
                     android:letterSpacing="0.05" />
 
-                <nisargpatel.deadreckoning.view.DegreeDialView
+                <drona.deadreckoning.view.DegreeDialView
                     android:id="@+id/degreeDialView"
                     android:layout_width="260dp"
                     android:layout_height="260dp"
