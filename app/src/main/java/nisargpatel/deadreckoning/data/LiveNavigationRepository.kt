@@ -42,6 +42,8 @@ import nisargpatel.deadreckoning.ml.PinoDrMotionEngine
 import nisargpatel.deadreckoning.ml.PinoPrediction
 import nisargpatel.deadreckoning.ml.V8DeadReckoningEngine
 import nisargpatel.deadreckoning.ml.V8Prediction
+import nisargpatel.deadreckoning.ml.V9AdaptiveProjectionEngine
+import nisargpatel.deadreckoning.ml.V9Prediction
 import nisargpatel.deadreckoning.fusion.FusedVehicleState
 import nisargpatel.deadreckoning.fusion.HeadingPolicy
 import nisargpatel.deadreckoning.fusion.MapConstraintConfig
@@ -94,8 +96,16 @@ class LiveNavigationRepository(
      * and outputs dynamic per-step uncertainty for the fusion filter.
      * PINO-DR v7 Supreme MoE and V8 are kept as fallbacks.
      */
+    /**
+     * Flagship on-device dead reckoning intelligence: v9 Adaptive Projection Dead Reckoning
+     * (Periodic Adaptive Trajectory Projection + 6-State ES-EKF soft innovation).
+     */
+    private val v9Model = runCatching { V9AdaptiveProjectionEngine(context) }
+        .onSuccess { Log.i("LiveNavigation", "Loaded v9 Adaptive Projection Dead Reckoning flagship engine") }
+        .onFailure { Log.w("LiveNavigation", "v9 Adaptive Projection unavailable, falling back to IDR-V1", it) }
+        .getOrNull()
     private val idrModel = runCatching { IdrMotionEngine(context) }
-        .onSuccess { Log.i("LiveNavigation", "Loaded IDR-V1 primary motion engine") }
+        .onSuccess { Log.i("LiveNavigation", "Loaded IDR-V1 motion engine") }
         .onFailure { Log.w("LiveNavigation", "IDR-V1 unavailable, falling back to PINO-DR", it) }
         .getOrNull()
     private val pinoModel = if (idrModel == null) {
@@ -143,8 +153,9 @@ class LiveNavigationRepository(
     override val gnssState: StateFlow<GNSSState> = _gnssState.asStateFlow()
     private val _aiState = MutableStateFlow(
         AIState(
-            isModelLoaded = idrModel != null || pinoModel != null || model != null,
-            modelVersion = idrModel?.let { "${it.manifest.model} (${it.manifest.preprocessing_version})" }
+            isModelLoaded = v9Model != null || idrModel != null || pinoModel != null || model != null,
+            modelVersion = v9Model?.let { "${it.manifest.model} (${it.manifest.preprocessing_version})" }
+                ?: idrModel?.let { "${it.manifest.model} (${it.manifest.preprocessing_version})" }
                 ?: pinoModel?.manifest?.deployment_status
                 ?: model?.manifest?.deployment_status
                 ?: "Unavailable"
@@ -211,6 +222,12 @@ class LiveNavigationRepository(
                     )
                 }
             }
+            val curSpd = if (_navigationState.value.speedKmh > 0.5) (_navigationState.value.speedKmh / 3.6).toFloat() else (_gnssState.value.speedKmh / 3.6).toFloat()
+            val curHeading = if (_navigationState.value.headingDegrees != 0.0) _navigationState.value.headingDegrees else _gnssState.value.bearingDegrees
+            v9Model?.reset(
+                initialSpeedMps = curSpd,
+                initialYawRad = Math.toRadians(curHeading).toFloat()
+            )
         }
     }
 
@@ -529,6 +546,10 @@ class LiveNavigationRepository(
             gnssRecoveryAnchorPosition = if (_navigationState.value.latitude != 0.0) {
                 GeoPoint(_navigationState.value.latitude, _navigationState.value.longitude)
             } else null
+            v9Model?.reset(
+                initialSpeedMps = (state.speedKmh / 3.6).toFloat(),
+                initialYawRad = Math.toRadians(state.bearingDegrees).toFloat()
+            )
         }
         // Use the monitor's effective accuracy, which is inflated while degraded or
         // recovering. That is what stops a doubtful first fix after an outage from
@@ -859,12 +880,46 @@ class LiveNavigationRepository(
 
         val effectiveDrSpeed = filterVehicleSpeed(fused.speedMps * 3.6, isStationary)
 
+        // Evaluate V9 Adaptive Projection at 5-second checkpoints
+        val v9Result = v9Model?.addSample(
+            aFwd = if (_sensorState.value.isVehicleFrameValid) _sensorState.value.vehicleAccelForward else (_sensorState.value.accelY - 9.81f * sin(Math.toRadians(_sensorState.value.pitchDegrees.toDouble())).toFloat()),
+            aLat = if (_sensorState.value.isVehicleFrameValid) _sensorState.value.vehicleAccelRight else _sensorState.value.accelX,
+            wYaw = if (_sensorState.value.isVehicleFrameValid) _sensorState.value.vehicleGyroYaw else _sensorState.value.gyroZ,
+            stepDisplacementMeters = stepForwardMeters.toFloat(),
+            stepHeadingDeltaRad = stepHeadingDeltaRadians.toFloat(),
+            isStationary = isStationary
+        )
+
+        var finalPosition = fused.position
+        if (v9Result != null) {
+            _aiState.value = _aiState.value.copy(
+                v9Event = v9Result.drivingEvent.name,
+                v9DiscrepancyMeters = v9Result.discrepancyMeters,
+                v9ProjectionsCount = v9Model?.totalProjectionsTriggered ?: 0
+            )
+            if (v9Result.projectionTriggered) {
+                val corrE = v9Result.errorStateCorrection[0] * v9Result.confidence
+                val corrN = v9Result.errorStateCorrection[1] * v9Result.confidence
+                val corrV = v9Result.errorStateCorrection[2] * v9Result.confidence
+                val corrPsi = v9Result.errorStateCorrection[3] * v9Result.confidence
+                fusion.applyErrorStateCorrection(
+                    deltaEastMeters = corrE.toDouble(),
+                    deltaNorthMeters = corrN.toDouble(),
+                    deltaSpeedMps = corrV.toDouble(),
+                    deltaHeadingRad = corrPsi.toDouble(),
+                    confidence = v9Result.confidence
+                )
+                finalPosition = fusion.state()?.position ?: finalPosition
+                Log.i("LiveNavigation", "V9 PATP soft innovation applied (PINO backbone)! Event: ${v9Result.drivingEvent.name}, dp: ${v9Result.discrepancyMeters}m")
+            }
+        }
+
         _navigationState.value = previous.copy(
             mode = NavigationMode.AI_DEAD_RECKONING,
             speedKmh = effectiveDrSpeed,
             headingDegrees = fused.headingDegrees,
-            latitude = fused.position.latitude,
-            longitude = fused.position.longitude,
+            latitude = finalPosition.latitude,
+            longitude = finalPosition.longitude,
             accuracyMeters = fused.horizontalUncertaintyMeters,
             confidencePercentage = navigationConfidence(fused, GnssQuality.DENIED),
             alongTrackUncertaintyMeters = fused.alongTrackUncertaintyMeters,
@@ -875,9 +930,9 @@ class LiveNavigationRepository(
             totalDistanceKm = previous.totalDistanceKm + stepForwardMeters.coerceAtLeast(0.0) / 1000.0
         )
         _mapState.value = _mapState.value.copy(
-            currentPosition = fused.position,
-            rawDRPosition = fused.position,
-            drTrajectory = (_mapState.value.drTrajectory + fused.position).takeLast(200)
+            currentPosition = finalPosition,
+            rawDRPosition = finalPosition,
+            drTrajectory = (_mapState.value.drTrajectory + finalPosition).takeLast(200)
         )
 
         val match = applyRouteMatch(fused.position, isDeadReckoning = true)
@@ -987,12 +1042,46 @@ class LiveNavigationRepository(
 
         val effectiveDrSpeed = filterVehicleSpeed(fused.speedMps * 3.6, isStationary)
 
+        // Evaluate V9 Adaptive Projection at 5-second checkpoints
+        val v9Result = v9Model?.addSample(
+            aFwd = if (_sensorState.value.isVehicleFrameValid) _sensorState.value.vehicleAccelForward else (_sensorState.value.accelY - 9.81f * sin(Math.toRadians(_sensorState.value.pitchDegrees.toDouble())).toFloat()),
+            aLat = if (_sensorState.value.isVehicleFrameValid) _sensorState.value.vehicleAccelRight else _sensorState.value.accelX,
+            wYaw = if (_sensorState.value.isVehicleFrameValid) _sensorState.value.vehicleGyroYaw else _sensorState.value.gyroZ,
+            stepDisplacementMeters = stepForwardMeters.toFloat(),
+            stepHeadingDeltaRad = stepHeadingDeltaRadians.toFloat(),
+            isStationary = isStationary
+        )
+
+        var finalPosition = fused.position
+        if (v9Result != null) {
+            _aiState.value = _aiState.value.copy(
+                v9Event = v9Result.drivingEvent.name,
+                v9DiscrepancyMeters = v9Result.discrepancyMeters,
+                v9ProjectionsCount = v9Model?.totalProjectionsTriggered ?: 0
+            )
+            if (v9Result.projectionTriggered) {
+                val corrE = v9Result.errorStateCorrection[0] * v9Result.confidence
+                val corrN = v9Result.errorStateCorrection[1] * v9Result.confidence
+                val corrV = v9Result.errorStateCorrection[2] * v9Result.confidence
+                val corrPsi = v9Result.errorStateCorrection[3] * v9Result.confidence
+                fusion.applyErrorStateCorrection(
+                    deltaEastMeters = corrE.toDouble(),
+                    deltaNorthMeters = corrN.toDouble(),
+                    deltaSpeedMps = corrV.toDouble(),
+                    deltaHeadingRad = corrPsi.toDouble(),
+                    confidence = v9Result.confidence
+                )
+                finalPosition = fusion.state()?.position ?: finalPosition
+                Log.i("LiveNavigation", "V9 PATP soft innovation applied to fusion! Event: ${v9Result.drivingEvent.name}, dp: ${v9Result.discrepancyMeters}m, conf: ${v9Result.confidence}")
+            }
+        }
+
         _navigationState.value = previous.copy(
             mode = NavigationMode.AI_DEAD_RECKONING,
             speedKmh = effectiveDrSpeed,
             headingDegrees = fused.headingDegrees,
-            latitude = fused.position.latitude,
-            longitude = fused.position.longitude,
+            latitude = finalPosition.latitude,
+            longitude = finalPosition.longitude,
             accuracyMeters = fused.horizontalUncertaintyMeters,
             confidencePercentage = navigationConfidence(fused, GnssQuality.DENIED),
             alongTrackUncertaintyMeters = fused.alongTrackUncertaintyMeters,
@@ -1004,9 +1093,9 @@ class LiveNavigationRepository(
                 stepForwardMeters.coerceAtLeast(0.0) / 1000.0
         )
         _mapState.value = _mapState.value.copy(
-            currentPosition = fused.position,
-            rawDRPosition = fused.position,
-            drTrajectory = (_mapState.value.drTrajectory + fused.position).takeLast(200)
+            currentPosition = finalPosition,
+            rawDRPosition = finalPosition,
+            drTrajectory = (_mapState.value.drTrajectory + finalPosition).takeLast(200)
         )
 
         val match = applyRouteMatch(fused.position, isDeadReckoning = true)
@@ -1311,4 +1400,20 @@ class LiveNavigationRepository(
         return GeoPoint(latitude + latitudeDelta, longitude + longitudeDelta)
     }
 
+    /**
+     * Cleanly releases all on-device neural engine ONNX runtimes and native resources.
+     */
+    fun destroy() {
+        try {
+            sensorAdapter.stopListening()
+            locationAdapter.stopLocationUpdates()
+            v9Model?.close()
+            idrModel?.close()
+            pinoModel?.close()
+            model?.close()
+            Log.i("LiveNavigation", "Closed all active on-device neural engine sessions cleanly")
+        } catch (e: Exception) {
+            Log.w("LiveNavigation", "Error tearing down neural engines", e)
+        }
+    }
 }

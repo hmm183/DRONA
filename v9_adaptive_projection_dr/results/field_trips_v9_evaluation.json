@@ -1,0 +1,41 @@
+[
+  {
+    "trip_id": "field_trip_mandadam_vijayawada",
+    "label": "Mandadam to Vijayawada",
+    "outage_duration_s": 4.9,
+    "outage_distance_m": 5360.35,
+    "naive_drift_m": 5300.44,
+    "v8_drift_m": 138.25,
+    "v9_drift_m": 197.77,
+    "v9_drift_pct": 3.69,
+    "projections_fired": 0,
+    "meets_isro_target": true,
+    "status": "PASSED"
+  },
+  {
+    "trip_id": "field_trip_mandadam_vitap",
+    "label": "Mandadam to VIT-AP",
+    "outage_duration_s": 4.9,
+    "outage_distance_m": 6442.31,
+    "naive_drift_m": 6380.79,
+    "v8_drift_m": 208.57,
+    "v9_drift_m": 92.61,
+    "v9_drift_pct": 1.44,
+    "projections_fired": 0,
+    "meets_isro_target": true,
+    "status": "PASSED"
+  },
+  {
+    "trip_id": "field_trip_vitap_mangalagiri",
+    "label": "VIT-AP to Mangalagiri",
+    "outage_duration_s": 4.9,
+    "outage_distance_m": 8339.31,
+    "naive_drift_m": 8278.63,
+    "v8_drift_m": 369.2,
+    "v9_drift_m": 203.86,
+    "v9_drift_pct": 2.44,
+    "projections_fired": 0,
+    "meets_isro_target": true,
+    "status": "PASSED"
+  }
+]

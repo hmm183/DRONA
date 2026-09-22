@@ -1,0 +1,47 @@
+{
+  "timestamp": null,
+  "tolerance_pct": 5.0,
+  "all_passed": true,
+  "scenarios": {
+    "motorway": {
+      "n_sequences": 7,
+      "expected_drift_m": 7.13,
+      "actual_drift_m": 7.128373826280185,
+      "absolute_diff_m": 0.001626173719815327,
+      "percentage_diff": 0.02280748555140711,
+      "passed": true
+    },
+    "quick_accel": {
+      "n_sequences": 4,
+      "expected_drift_m": 21.11,
+      "actual_drift_m": 21.107701883015256,
+      "absolute_diff_m": 0.002298116984743359,
+      "percentage_diff": 0.010886390264061388,
+      "passed": true
+    },
+    "hard_brake": {
+      "n_sequences": 12,
+      "expected_drift_m": 17.15,
+      "actual_drift_m": 17.147129656635276,
+      "absolute_diff_m": 0.002870343364723027,
+      "percentage_diff": 0.016736696004215904,
+      "passed": true
+    },
+    "sharp_turns": {
+      "n_sequences": 39,
+      "expected_drift_m": 39.26,
+      "actual_drift_m": 39.2620410423454,
+      "absolute_diff_m": 0.0020410423454038096,
+      "percentage_diff": 0.0051987833555879005,
+      "passed": true
+    },
+    "roundabout": {
+      "n_sequences": 3,
+      "expected_drift_m": 75.31,
+      "actual_drift_m": 75.310105878292,
+      "absolute_diff_m": 0.00010587829200403576,
+      "percentage_diff": 0.00014058995087509727,
+      "passed": true
+    }
+  }
+}

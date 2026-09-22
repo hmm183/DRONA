@@ -22,6 +22,14 @@ import nisargpatel.deadreckoning.sensor.EnhancedStepCounter;
 import nisargpatel.deadreckoning.stepcounting.DynamicStepCounter;
 import nisargpatel.deadreckoning.stepcounting.StaticStepCounter;
 
+/**
+ * Legacy pedestrian step counting activity from 2016 open-source base.
+ *
+ * @deprecated Retained for AndroidManifest backwards compatibility.
+ * Modern MARK-V vehicle navigation UI is powered by Jetpack Compose via
+ * [nisargpatel.deadreckoning.activity.MainContainerActivity] and [nisargpatel.deadreckoning.ui.navigation.IDRAppShell].
+ */
+@Deprecated
 public class StepCountActivity extends AppCompatActivity implements SensorEventListener {
 
     private static final double DEFAULT_STRIDE_LENGTH = 0.75;

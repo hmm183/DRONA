@@ -1,0 +1,17 @@
+{
+  "preprocessing_version": "v9-projection",
+  "discrepancy_m_scale": 10.0,
+  "discrepancy_speed_scale": 5.0,
+  "discrepancy_yaw_scale": 1.0,
+  "current_speed_scale": 30.0,
+  "clip_bounds": {
+    "a_fwd_min": -8.0,
+    "a_fwd_max": 8.0,
+    "w_yaw_min": -1.0,
+    "w_yaw_max": 1.0,
+    "a_lat_min": -8.0,
+    "a_lat_max": 8.0,
+    "speed_min": 0.0,
+    "speed_max": 45.0
+  }
+}

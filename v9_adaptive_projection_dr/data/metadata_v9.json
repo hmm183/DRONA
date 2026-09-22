@@ -1,0 +1,21 @@
+{
+  "dataset": "v9_adaptive_projection_dr",
+  "split_ratio": "70% Train, 10% Val, 20% Test (Trip-Level Disjoint)",
+  "seed": 42,
+  "sampling_rate_hz": 10.0,
+  "dt_s": 0.1,
+  "total_trips": 72,
+  "train_trips": 50,
+  "val_trips": 9,
+  "test_trips": 13,
+  "train_samples": 72614,
+  "val_samples": 10676,
+  "test_samples": 23033,
+  "coordinate_convention": "local ENU (psi clockwise from North)",
+  "features": [
+    "a_fwd",
+    "w_yaw",
+    "a_lat",
+    "v_prev"
+  ]
+}

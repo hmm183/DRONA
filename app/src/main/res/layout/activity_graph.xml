@@ -146,7 +146,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="20dp"
         android:contentDescription="Start / pause recording"
-        app:srcCompat="@drawable/ic_play_arrow_black_24dp"
+        app:srcCompat="@drawable/ic_play"
         app:tint="@android:color/black"
         app:backgroundTint="#38BDF8"
         app:borderWidth="0dp"

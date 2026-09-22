@@ -158,6 +158,24 @@ class VehicleHierarchicalHybridEstimator(
         return fgoResult
     }
 
+    /**
+     * Ingests soft error-state innovations from Flagship v9 Adaptive Projection DR (PATP).
+     * Softly updates the internal spatial and kinematic states of IMM-UKF, RBPF, and FGO.
+     */
+    fun applyErrorStateCorrection(
+        deltaEastMeters: Double,
+        deltaNorthMeters: Double,
+        deltaSpeedMps: Double = 0.0,
+        deltaHeadingRad: Double = 0.0,
+        confidence: Float = 1.0f
+    ): Boolean {
+        if (!isInitialized()) return false
+        immUkf.applyErrorState(deltaEastMeters, deltaNorthMeters, deltaSpeedMps, deltaHeadingRad, confidence)
+        rbpf.applyErrorState(deltaEastMeters, deltaNorthMeters, confidence)
+        fgo.applyErrorState(deltaEastMeters, deltaNorthMeters, confidence)
+        return true
+    }
+
     override fun state(): FusedVehicleState? {
         val immState = immUkf.state() ?: return null
         val fgoState = fgo.state()

@@ -1,0 +1,9 @@
+Configuration,Macro FDE (m),Recovery Ratio (%),Motorway (m),Quick Accel (m),Hard Brake (m),Sharp Turns (m),Roundabout (m)
+Config A: Pure V3,31.78,0.0,7.13,21.11,16.55,38.81,75.31
+Config B: V3 + EKF,31.78,0.0,7.13,21.11,16.55,38.81,75.31
+Config C: v9 Full System,31.352,1.35,7.12,20.71,16.34,38.27,74.33
+Config D: Fixed 5m Threshold,31.238,1.71,7.12,20.69,16.31,37.96,74.11
+Config E: No Confidence Gate,31.238,1.71,7.12,20.69,16.31,37.96,74.11
+Config F: Forced Overwrite,30.753,3.23,7.11,20.4,16.1,37.17,72.99
+Config G: No ZUPT,31.238,1.71,7.12,20.69,16.31,37.96,74.11
+Config H: Fast 2s Checkpoint,31.238,1.71,7.12,20.69,16.31,37.96,74.11

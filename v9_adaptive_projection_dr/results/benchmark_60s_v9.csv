@@ -1,0 +1,4 @@
+Scenario,Samples,Config A (V3) FDE (m),Config B (EKF) FDE (m),Config C (v9 Full) FDE (m),v9 RMSE (m),Delta vs V3 (%),Recovery Ratio (%),Beats V3,Mean Projections
+Motorway,1,131.224,131.224,130.35,57.199,-0.7%,0.7%,YES,2.0
+Hard brake,2,320.643,320.643,318.548,157.129,-0.7%,0.7%,YES,2.0
+Sharp turns,8,558.118,558.118,550.177,292.026,-1.4%,1.4%,YES,2.0

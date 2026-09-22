@@ -22,7 +22,11 @@ import org.junit.Test
 import org.osmdroid.util.GeoPoint
 
 /**
- * End-to-end GNSS blackout measurement on a held-out session, through the real estimator.
+ * IDR-V1 & V8 Baseline End-to-End GNSS Blackout Measurement Suite.
+ *
+ * Evaluates the primary IDR-V1 heteroscedastic neural motion engine against the V8 baseline
+ * across simulated open-loop GNSS outages. Paired with [PinoBlackoutAblationTest] (PINO-DR v3)
+ * and [V9AdaptiveProjectionEngineTest] (v9 Adaptive Projection DR).
  *
  * ## What is actually being measured
  *

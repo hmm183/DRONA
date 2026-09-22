@@ -58,6 +58,7 @@ fun DiagnosticsScreen(
         CommandPanel(borderColor = PurpleAI.copy(alpha = 0.5f)) {
             SectionLabel("Hybrid Estimator Telemetry", PurpleAI)
             val modelLabel = when {
+                aiState.modelVersion.contains("v9", ignoreCase = true) -> "v9 PATP"
                 aiState.modelVersion.contains("PINO", ignoreCase = true) -> "PINO-DR"
                 aiState.modelVersion.contains("IDR", ignoreCase = true) -> "IDR-V1"
                 aiState.modelVersion.isNotBlank() -> aiState.modelVersion.take(10)
@@ -65,6 +66,10 @@ fun DiagnosticsScreen(
             }
             DataRow("Active architecture", "Proposed Hybrid (IMM+RBPF+FGO)", PrimaryBlue)
             DataRow("Dominant mode", aiState.motionClassification, PurpleAI)
+            if (aiState.v9ProjectionsCount > 0 || aiState.modelVersion.contains("v9", ignoreCase = true)) {
+                DataRow("v9 PATP Event", "${aiState.v9Event} (${String.format("%.1f", aiState.v9DiscrepancyMeters)}m)", PurpleAI)
+                DataRow("v9 Projections Fired", "${aiState.v9ProjectionsCount}", SuccessGreen)
+            }
             DataRow("$modelLabel inference", "${aiState.inferenceTimeMs} ms", TextPrimary)
             DataRow("Step latency", "~0.74 ms filter / ~1.20 ms total", SuccessGreen)
         }

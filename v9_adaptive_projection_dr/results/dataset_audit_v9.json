@@ -1,0 +1,102 @@
+{
+  "dataset_name": "IO-VNBD S-Dataset (Smartphone Only)",
+  "source_directory": "C:\\Users\\Raushan\\Desktop\\IO-VNBD\\Synchronised V abd S datasets\\Uncategorised IOVNB Dataset\\S-Dataset",
+  "total_journeys": 72,
+  "total_segments": 1065277,
+  "total_duration_hours": 25647.953416666667,
+  "total_distance_km": 13419.916150000003,
+  "mean_sampling_rate_hz": 10.0,
+  "gnss_coverage_pct": 0.0,
+  "stationary_journeys": 2,
+  "degraded_gnss_journeys": 72,
+  "rattle_heavy_segments": 0,
+  "scenario_distribution": {
+    "motorway": 7,
+    "roundabout": 3,
+    "quick_accel": 4,
+    "hard_brake": 12,
+    "sharp_turns": 39
+  },
+  "sample_journeys": [
+    {
+      "filename": "S-M.csv",
+      "duration_s": 6171748.0,
+      "distance_m": 1056136.2200000002,
+      "segments": 105973,
+      "mean_speed_mps": 9.966048842168835,
+      "gnss_coverage_pct": 0.0
+    },
+    {
+      "filename": "S-S1.csv",
+      "duration_s": 5174499.0,
+      "distance_m": 384514.09,
+      "segments": 51746,
+      "mean_speed_mps": 7.43090596374599,
+      "gnss_coverage_pct": 0.0
+    },
+    {
+      "filename": "S-S2.csv",
+      "duration_s": 9201099.0,
+      "distance_m": 759187.55,
+      "segments": 93875,
+      "mean_speed_mps": 8.087235076057778,
+      "gnss_coverage_pct": 0.0
+    },
+    {
+      "filename": "S-S3a.csv",
+      "duration_s": 2462000.0,
+      "distance_m": 261306.50999999998,
+      "segments": 24621,
+      "mean_speed_mps": 10.613281345193128,
+      "gnss_coverage_pct": 0.0
+    },
+    {
+      "filename": "S-S3b.csv",
+      "duration_s": 681.3000000000001,
+      "distance_m": 39499.780000000006,
+      "segments": 6812,
+      "mean_speed_mps": 5.799411419345369,
+      "gnss_coverage_pct": 0.0
+    },
+    {
+      "filename": "S-S3c.csv",
+      "duration_s": 3718199.0,
+      "distance_m": 439077.19999999995,
+      "segments": 37183,
+      "mean_speed_mps": 11.808781163434904,
+      "gnss_coverage_pct": 0.0
+    },
+    {
+      "filename": "S-S4.csv",
+      "duration_s": 354780.0,
+      "distance_m": 934079.48,
+      "segments": 94598,
+      "mean_speed_mps": 9.874099154334038,
+      "gnss_coverage_pct": 0.0
+    },
+    {
+      "filename": "S-Vfa01.csv",
+      "duration_s": 1148500.0,
+      "distance_m": 188577.34,
+      "segments": 11486,
+      "mean_speed_mps": 16.419141563642693,
+      "gnss_coverage_pct": 0.0
+    },
+    {
+      "filename": "S-Vfa02.csv",
+      "duration_s": 6752201.0,
+      "distance_m": 1632006.9300000002,
+      "segments": 67523,
+      "mean_speed_mps": 24.16964530604387,
+      "gnss_coverage_pct": 0.0
+    },
+    {
+      "filename": "S-Vta10.csv",
+      "duration_s": 150100.0,
+      "distance_m": 37857.11,
+      "segments": 1502,
+      "mean_speed_mps": 25.225073235685752,
+      "gnss_coverage_pct": 0.0
+    }
+  ]
+}

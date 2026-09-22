@@ -1,0 +1,6 @@
+Scenario,V3 Drift (m),v9 Drift (m),Recovery Ratio (%)
+Motorway,7.13,7.12,0.12
+Quick Accel,21.11,20.71,1.88
+Hard Brake,16.55,16.34,1.26
+Sharp Turns,38.81,38.27,1.38
+Roundabout,75.31,74.33,1.3

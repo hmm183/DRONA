@@ -7,7 +7,14 @@ import org.ejml.data.DenseMatrix64F;
 import java.util.ArrayList;
 import java.util.Collections;
 
-//final class cannot be extended by another class
+/**
+ * Legacy utility functions from 2016 open-source base.
+ *
+ * @deprecated Retained for legacy activity compatibility.
+ * Modern vehicle navigation matrix mathematics and frame conversions are located in
+ * [nisargpatel.deadreckoning.fusion.math.MatrixMath] and [nisargpatel.deadreckoning.core.frame.VehicleFrameTransform].
+ */
+@Deprecated
 public final class ExtraFunctions {
 
     //private constructor stops class from

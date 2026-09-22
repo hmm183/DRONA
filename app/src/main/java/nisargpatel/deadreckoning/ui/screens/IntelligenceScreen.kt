@@ -98,6 +98,14 @@ fun IntelligenceScreen(
             )
         }
 
+        // ── 3.5 Flagship v9 Adaptive Projection Telemetry ─────────────────
+        V9AdaptiveProjectionCard(
+            drivingEvent = aiState.v9Event,
+            discrepancyMeters = aiState.v9DiscrepancyMeters,
+            projectionsCount = aiState.v9ProjectionsCount,
+            isModelActive = aiState.modelVersion.contains("v9", ignoreCase = true) || aiState.v9ProjectionsCount > 0
+        )
+
         // ── 4. Neural Model Selection & Capabilities ───────────────────────
         NeuralModelComparisonCard(
             activeModelVersion = aiState.modelVersion,
@@ -590,8 +598,9 @@ private fun NeuralModelComparisonCard(
     dominantExpert: String = "",
     expertWeights: List<Float> = emptyList()
 ) {
-    val isIdrActive = activeModelVersion.contains("IDR", ignoreCase = true)
-    val isPinoActive = !isIdrActive && (activeModelVersion.contains("PINO", ignoreCase = true) || activeModelVersion.isBlank())
+    val isV9Active = activeModelVersion.contains("v9", ignoreCase = true) || activeModelVersion.contains("Adaptive", ignoreCase = true)
+    val isIdrActive = !isV9Active && activeModelVersion.contains("IDR", ignoreCase = true)
+    val isPinoActive = !isV9Active && !isIdrActive && (activeModelVersion.contains("PINO", ignoreCase = true) || activeModelVersion.isBlank())
 
     Surface(
         modifier = Modifier
@@ -629,6 +638,48 @@ private fun NeuralModelComparisonCard(
             }
 
             Spacer(modifier = Modifier.height(12.dp))
+
+            // V9 Adaptive Projection DR card (Flagship)
+            Surface(
+                shape = RoundedCornerShape(14.dp),
+                color = if (isV9Active) Color(0xFFECFDF5) else Color(0xFFF8FAFC),
+                border = BorderStroke(if (isV9Active) 1.5.dp else 1.dp, if (isV9Active) Color(0xFF10B981) else Color(0xFFE2E8F0)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(if (isV9Active) Color(0xFF059669) else Color(0xFFE2E8F0)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = if (isV9Active) Color.White else Color(0xFF64748B), modifier = Modifier.size(20.dp))
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("v9 Adaptive Projection DR", fontWeight = FontWeight.Bold, fontSize = 13.5.sp, color = if (isV9Active) Color(0xFF0F172A) else Color(0xFF334155))
+                        Text("Periodic Adaptive Trajectory Projection • 6-State ES-EKF", fontSize = 11.sp, color = if (isV9Active) Color(0xFF059669) else Color(0xFF64748B))
+                    }
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = if (isV9Active) Color(0xFF059669) else Color(0xFFF1F5F9)
+                    ) {
+                        Text(
+                            text = if (isV9Active) "FLAGSHIP" else "STANDBY",
+                            color = if (isV9Active) Color.White else Color(0xFF64748B),
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             // IDR-V1 card
             Surface(
@@ -944,5 +995,179 @@ private fun SpecRowItem(
             color = valueColor,
             fontWeight = FontWeight.Bold
         )
+    }
+}
+
+@Composable
+private fun V9AdaptiveProjectionCard(
+    drivingEvent: String,
+    discrepancyMeters: Float,
+    projectionsCount: Int,
+    isModelActive: Boolean
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(2.dp, RoundedCornerShape(20.dp)),
+        color = Color.White,
+        shape = RoundedCornerShape(20.dp),
+        border = BorderStroke(1.dp, if (isModelActive) Color(0xFF10B981).copy(alpha = 0.5f) else Color(0xFFE2E8F0))
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .background(Color(0xFFECFDF5), RoundedCornerShape(10.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AutoAwesome,
+                            contentDescription = null,
+                            tint = Color(0xFF059669),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Column {
+                        Text(
+                            text = "FLAGSHIP DEAD RECKONING",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF64748B),
+                            letterSpacing = 0.5.sp
+                        )
+                        Text(
+                            text = "v9 Adaptive State Projection",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color(0xFF0F172A)
+                        )
+                    }
+                }
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = if (isModelActive) Color(0xFFDCFCE7) else Color(0xFFF1F5F9)
+                ) {
+                    Text(
+                        text = if (isModelActive) "ACTIVE" else "READY",
+                        color = if (isModelActive) Color(0xFF166534) else Color(0xFF64748B),
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // Two metric columns
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                // Driving Event Card
+                Surface(
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp),
+                    color = Color(0xFFF8FAFC),
+                    border = BorderStroke(1.dp, Color(0xFFE2E8F0))
+                ) {
+                    Column(modifier = Modifier.padding(10.dp)) {
+                        Text(
+                            text = "EVENT CLASSIFIER",
+                            fontSize = 9.5.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF64748B)
+                        )
+                        Spacer(modifier = Modifier.height(3.dp))
+                        Text(
+                            text = if (drivingEvent.isNotBlank()) drivingEvent else "CRUISE",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color(0xFF0F172A),
+                            maxLines = 1
+                        )
+                        Text(
+                            text = "Adaptive Gating: active",
+                            fontSize = 9.sp,
+                            color = Color(0xFF059669)
+                        )
+                    }
+                }
+
+                // Physical Discrepancy Card
+                Surface(
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp),
+                    color = Color(0xFFF8FAFC),
+                    border = BorderStroke(1.dp, Color(0xFFE2E8F0))
+                ) {
+                    Column(modifier = Modifier.padding(10.dp)) {
+                        Text(
+                            text = "DISCREPANCY (d_p)",
+                            fontSize = 9.5.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF64748B)
+                        )
+                        Spacer(modifier = Modifier.height(3.dp))
+                        Text(
+                            text = "${String.format("%.2f", discrepancyMeters)} m",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color(0xFF0F172A)
+                        )
+                        Text(
+                            text = "Cadence: 5.0s (50 steps)",
+                            fontSize = 9.sp,
+                            color = Color(0xFF2563EB)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Footer row: Projections triggered
+            Surface(
+                shape = RoundedCornerShape(10.dp),
+                color = Color(0xFFF0FDF4),
+                border = BorderStroke(1.dp, Color(0xFFBBF7D0)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            tint = Color(0xFF16A34A),
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Soft ES-EKF Innovations",
+                            fontSize = 11.sp,
+                            color = Color(0xFF166534),
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                    Text(
+                        text = "$projectionsCount fired",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF166534)
+                    )
+                }
+            }
+        }
     }
 }

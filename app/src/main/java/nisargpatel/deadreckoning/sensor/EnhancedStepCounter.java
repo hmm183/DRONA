@@ -3,6 +3,14 @@ package nisargpatel.deadreckoning.sensor;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Legacy enhanced pedestrian step counter from original 2016 pedometer base.
+ *
+ * @deprecated Retained for backwards compatibility with legacy activities.
+ * Modern MARK-V vehicle navigation relies on [nisargpatel.deadreckoning.ml] neural motion engines
+ * and [nisargpatel.deadreckoning.fusion.VehicleHierarchicalHybridEstimator] for vehicle dead reckoning.
+ */
+@Deprecated
 public class EnhancedStepCounter {
     
     private static final int WINDOW_SIZE = 10;

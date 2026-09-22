@@ -1,0 +1,50 @@
+{
+  "all_passed": true,
+  "results": [
+    {
+      "test": "Test A: Acceleration units (SI)",
+      "status": "PASSED",
+      "error": null
+    },
+    {
+      "test": "Test B: Angular velocity units (SI)",
+      "status": "PASSED",
+      "error": null
+    },
+    {
+      "test": "Test C: ENU North heading (0 deg)",
+      "status": "PASSED",
+      "error": null
+    },
+    {
+      "test": "Test D: ENU East heading (90 deg)",
+      "status": "PASSED",
+      "error": null
+    },
+    {
+      "test": "Test E: Zero velocity propagation (ZUPT)",
+      "status": "PASSED",
+      "error": null
+    },
+    {
+      "test": "Test F: Circular motion kinematics",
+      "status": "PASSED",
+      "error": null
+    },
+    {
+      "test": "Test G: V3 Adapter frozen integrity",
+      "status": "PASSED",
+      "error": null
+    },
+    {
+      "test": "Test H: Dataset split leakage check",
+      "status": "PASSED",
+      "error": null
+    },
+    {
+      "test": "Test I: Curved trajectory preservation",
+      "status": "PASSED",
+      "error": null
+    }
+  ]
+}

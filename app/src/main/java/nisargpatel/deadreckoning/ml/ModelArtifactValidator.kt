@@ -27,4 +27,14 @@ object ModelArtifactValidator {
         require(hash.equals(manifest.sha256, ignoreCase = true)) { "V8 model hash mismatch" }
         return manifest
     }
+
+    fun validateV9(context: Context): V9Manifest {
+        val manifest = context.assets.open("ml/v9_manifest.json").reader().use { Gson().fromJson(it, V9Manifest::class.java) }
+        require(manifest.checkpoint_interval_steps == 50) { "Unexpected V9 checkpoint interval" }
+        val hash = context.assets.open("ml/v9_adaptive_projection.onnx").use { stream ->
+            MessageDigest.getInstance("SHA-256").digest(stream.readBytes()).joinToString("") { "%02x".format(it) }
+        }
+        require(hash.equals(manifest.sha256, ignoreCase = true)) { "V9 model hash mismatch" }
+        return manifest
+    }
 }

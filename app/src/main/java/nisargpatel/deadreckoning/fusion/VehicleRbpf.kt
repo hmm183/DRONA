@@ -96,6 +96,21 @@ class VehicleRbpf(
         }
     }
 
+    /**
+     * Soft Error-State Innovation injection (e.g. from v9 Adaptive Projection DR).
+     * Shifts particle positions in local ENU frame.
+     */
+    fun applyErrorState(deltaEastMeters: Double, deltaNorthMeters: Double, confidence: Float = 1.0f) {
+        if (reference == null || particles.isEmpty()) return
+        val c = confidence.toDouble().coerceIn(0.0, 1.0)
+        val dE = deltaEastMeters * c
+        val dN = deltaNorthMeters * c
+        for (p in particles) {
+            p.pe += dE
+            p.pn += dN
+        }
+    }
+
     override fun predict(
         forwardMeters: Double,
         lateralMeters: Double,

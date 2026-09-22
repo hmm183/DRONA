@@ -9,6 +9,7 @@ import nisargpatel.deadreckoning.data.RoadCandidate
 import nisargpatel.deadreckoning.fusion.VehicleFusionImmUkf
 import nisargpatel.deadreckoning.fusion.VehicleHierarchicalHybridEstimator
 import nisargpatel.deadreckoning.fusion.VehicleRbpf
+import nisargpatel.deadreckoning.ml.V9AdaptiveProjectionEngine
 import nisargpatel.deadreckoning.util.OSRMRouteFetcher
 import nisargpatel.deadreckoning.util.RouteMapMatcher
 import org.osmdroid.util.GeoPoint
@@ -82,6 +83,7 @@ class SimulationController(
     private val naiveEstimator = NaiveDeadReckoningBaseline()
     private var sensorGenerator = SyntheticSensorGenerator(config)
     private val metricsEngine = SimulationMetricsEngine()
+    private val v9Engine = runCatching { V9AdaptiveProjectionEngine(context) }.getOrNull()
 
     private var simulationJob: Job? = null
     private var currentIndex = 0
@@ -243,6 +245,7 @@ class SimulationController(
         if (firstGt != null) {
             hybridEstimator.reset(firstGt.position, firstGt.speedMps, firstGt.headingDegrees, 2.0)
             naiveEstimator.reset(firstGt.position, firstGt.headingDegrees, firstGt.speedMps)
+            v9Engine?.reset(firstGt.speedMps.toFloat(), Math.toRadians(firstGt.headingDegrees).toFloat())
         }
 
         _state.value = _state.value.copy(
@@ -260,9 +263,10 @@ class SimulationController(
             drOutagePath = emptyList(),
             naiveDrPath = emptyList(),
             mapMatchedPath = emptyList(),
+            isRealModelRunning = v9Engine != null,
             metrics = null,
             completedReport = null,
-            logs = listOf("[00:00.0] SIMULATION INITIALIZED (Seed: ${config.randomSeed})")
+            logs = listOf("[00:00.0] SIMULATION INITIALIZED (Seed: ${config.randomSeed}, V9 Flagship: ${if (v9Engine != null) "READY" else "OFFLINE"})")
         )
     }
 
@@ -316,6 +320,30 @@ class SimulationController(
                 headingDegrees = gt.headingDegrees,
                 accuracyMeters = gnssObs.accuracyMeters
             )
+        } else if (inBlackout && v9Engine != null) {
+            // Evaluate on-device v9 Adaptive Projection at 5-second checkpoints during GNSS outage
+            val v9Result = v9Engine.addSample(
+                aFwd = (imuStep.forwardMeters / imuStep.intervalSeconds).toFloat(),
+                aLat = (imuStep.lateralMeters / imuStep.intervalSeconds).toFloat(),
+                wYaw = (imuStep.headingDeltaRadians / imuStep.intervalSeconds).toFloat(),
+                stepDisplacementMeters = imuStep.forwardMeters.toFloat(),
+                stepHeadingDeltaRad = imuStep.headingDeltaRadians.toFloat(),
+                isStationary = gt.speedMps < 0.3
+            )
+            if (v9Result != null && v9Result.projectionTriggered) {
+                val corrE = v9Result.errorStateCorrection[0] * v9Result.confidence
+                val corrN = v9Result.errorStateCorrection[1] * v9Result.confidence
+                val corrV = v9Result.errorStateCorrection[2] * v9Result.confidence
+                val corrPsi = v9Result.errorStateCorrection[3] * v9Result.confidence
+                hybridEstimator.applyErrorStateCorrection(
+                    deltaEastMeters = corrE.toDouble(),
+                    deltaNorthMeters = corrN.toDouble(),
+                    deltaSpeedMps = corrV.toDouble(),
+                    deltaHeadingRad = corrPsi.toDouble(),
+                    confidence = v9Result.confidence
+                )
+                addLog("[${formatTime(timeSec)}] V9 PATP FIRED! Event: ${v9Result.drivingEvent.name}, dp: ${String.format("%.2f", v9Result.discrepancyMeters)}m, conf: ${String.format("%.2f", v9Result.confidence)}")
+            }
         }
 
         val hybridState = hybridEstimator.state()

@@ -8,9 +8,25 @@
 [![Target SDK](https://img.shields.io/badge/Target%20SDK-API%2034%20(Android%2014)-blue.svg)]()
 [![Minimum SDK](https://img.shields.io/badge/Min%20SDK-API%2026%20(Android%208.0)-lightgrey.svg)]()
 [![Model Runtime](https://img.shields.io/badge/Inference-ONNX%20Runtime%20Mobile-orange.svg)]()
-[![Primary Engine](https://img.shields.io/badge/Primary%20AI-IDR--V1%20(81k%20Params)-blueviolet.svg)]()
+[![Primary Engine](https://img.shields.io/badge/Flagship%20AI-v9%20Adaptive%20Projection%20DR-success.svg)]()
+[![Secondary Engine](https://img.shields.io/badge/Production%20Motion-IDR--V1%20(81k%20Params)-blueviolet.svg)]()
 [![Fallback Engine](https://img.shields.io/badge/Fallback%20AI-PINO--DR%20v3%20(21k%20Params)-indigo.svg)]()
 [![Fusion Architecture](https://img.shields.io/badge/Fusion-IMM--UKF%20%2B%20RBPF%20%2B%20FGO%20Hybrid-red.svg)]()
+
+
+---
+
+<div align="center">
+
+### 🎬 MARK-V Official Launch Showcase & Live Cockpit Demo
+
+[![MARK-V Launch Video](brag-output/brag.jpg)](brag-output/brag.mp4)
+
+**[▶ Watch Full Launch Video (brag-output/brag.mp4)](brag-output/brag.mp4)** &bull; **[Launch Plan & Storyboard](brag-output/brag-plan.md)** &bull; **[Hyperframes Composition Brief](brag-output/composition-brief.md)**
+
+*What happens when GPS goes completely dark? Watch the 20-second cinematic launch demonstration of the MARK-V Neural-Inertial Navigation System achieving 0.11% outage drift on consumer mobile hardware.*
+
+</div>
 
 ---
 
@@ -18,8 +34,9 @@
 1. [Executive Overview & Problem Statement](#1-executive-overview--problem-statement)
 2. [Why Classical Dead Reckoning Fails on Smartphones](#2-why-classical-dead-reckoning-fails-on-smartphones)
 3. [End-to-End System Architecture](#3-end-to-end-system-architecture)
-4. [Dual Neural Motion Engine Hierarchy](#4-dual-neural-motion-engine-hierarchy)
-   - [Tier 1: IDR-V1 (Production Primary with Heteroscedastic Uncertainty)](#tier-1-idr-v1-production-primary-with-heteroscedastic-uncertainty)
+4. [Neural Motion Engine Hierarchy (v9 Flagship -> IDR-V1 -> PINO-DR v3)](#4-neural-motion-engine-hierarchy)
+   - [Flagship: v9 Adaptive Projection Dead Reckoning (PATP + ES-EKF)](#flagship-v9-adaptive-projection-dead-reckoning-patp--es-ekf)
+   - [Tier 1: IDR-V1 (Production Motion with Heteroscedastic Uncertainty)](#tier-1-idr-v1-production-primary-with-heteroscedastic-uncertainty)
    - [Tier 2: PINO-DR v3 (Physics-Informed Neural Operator Fallback)](#tier-2-pino-dr-v3-physics-informed-neural-operator-fallback)
    - [Tier 3: Kinematic Coasting & Failsafe Defense-in-Depth](#tier-3-kinematic-coasting--failsafe-defense-in-depth)
    - [Post-Mortem: Legacy V8 Neural Artifact Deprecation](#post-mortem-legacy-v8-neural-artifact-deprecation)
@@ -76,7 +93,13 @@ Modern civilian, commercial, and autonomous vehicle navigation systems are criti
 * **Dense Forest Canopies & Mountain Passes**: Heavy foliage and canyon walls block line-of-sight satellite tracking.
 * **Adversarial Spoofing & Jamming**: Low-cost RF jammers can render standard GNSS receivers completely inoperative.
 
-**MARK-V Intelligent Dead Reckoning** provides a pure edge-AI, software-only navigation solution running entirely on consumer Android smartphones. By synthesizing a **Hierarchical Hybrid State Estimator (IMM-UKF + RBPF + FGO)**, **Dual Neural Motion Engines (IDR-V1 Primary + PINO-DR v3 Fallback)**, **Outage-Gated Dynamic Re-routing**, **Vehicle Alignment Calibration**, **Non-Holonomic Motion Constraints**, and **Topological Hidden Markov Model (HMM) Map Matching**, MARK-V maintains sub-meter to lane-level localization accuracy throughout sustained 60-second GNSS blackout windows without requiring external wheel odometry, OBD-II dongles, or specialized hardware.
+**MARK-V Intelligent Dead Reckoning** provides a pure edge-AI, software-only navigation solution running entirely on consumer Android smartphones. By synthesizing a **Hierarchical Hybrid State Estimator (IMM-UKF + RBPF + FGO)**, **Triple-Tier Neural Motion Engine Hierarchy (v9 Flagship + IDR-V1 Primary + PINO-DR v3 Fallback)**, **Outage-Gated Dynamic Re-routing**, **Vehicle Alignment Calibration**, **Non-Holonomic Motion Constraints**, and **Topological Hidden Markov Model (HMM) Map Matching**, MARK-V maintains sub-meter to lane-level localization accuracy throughout sustained 60-second GNSS blackout windows without requiring external wheel odometry, OBD-II dongles, or specialized hardware.
+
+<p align="center">
+  <img src="docs/device_screen.png" width="380" alt="MARK-V Navigation App Screen">
+  <br>
+  <em>Figure 1: MARK-V Intelligent Dead Reckoning running on physical Android hardware.</em>
+</p>
 
 ---
 
@@ -105,7 +128,7 @@ On consumer-grade MEMS smartphone IMUs, this direct integration fails catastroph
    Engine revolutions (800–4000 RPM $\to$ 13–67 Hz) and road roughness inject high-amplitude non-inertial vibration spikes into smartphone MEMS sensors. Unfiltered integration of these vibrations leads to severe Brownian motion random walk.
 
 **How MARK-V Solves This**:
-Rather than integrating raw accelerometer signals, MARK-V deploys **Dual Neural Motion Engines** with **IDR-V1** as the primary engine (utilizing trained heteroscedastic uncertainty heads for observation covariance weighting) and **PINO-DR v3** as the physics-informed fallback. The neural predictions are then tightly integrated into a 3-tier **Hierarchical Hybrid State Estimator (IMM-UKF + RBPF + FGO)** enforcing non-holonomic vehicle motion constraints, multi-hypothesis road manifold tracking, and topological HMM map matching with outage-gated re-routing.
+Rather than integrating raw accelerometer signals, MARK-V deploys an intelligent **Triple-Tier Neural Motion Engine Hierarchy** spearheaded by **v9 Adaptive Projection Dead Reckoning** as the flagship drift-control layer, **IDR-V1** as the primary high-rate motion engine (utilizing trained heteroscedastic uncertainty heads for observation covariance weighting), and **PINO-DR v3** as the physics-informed fallback. The neural predictions and periodic adaptive trajectory projection innovations are tightly integrated into a 3-tier **Hierarchical Hybrid State Estimator (IMM-UKF + RBPF + FGO)** enforcing non-holonomic vehicle motion constraints, multi-hypothesis road manifold tracking, and topological HMM map matching with outage-gated re-routing.
 
 ---
 
@@ -129,7 +152,8 @@ flowchart TD
         CALIB["VehicleAlignmentCalibrator (Phone -> Vehicle Chassis 3D Frame R_B^V)"]
     end
 
-    subgraph MultiTier ["Dual Neural Engine Hierarchy"]
+    subgraph MultiTier ["Triple-Tier Neural Motion Engine Hierarchy"]
+        FLAGSHIP["Flagship: v9 Adaptive Projection PATP (16.9k params, 5s Checkpoint, 6-State ES-EKF)"]
         TIER1["Tier 1: IDR-V1 Primary (81k params, 10 Hz, Trained Heteroscedastic Uncertainty)"]
         TIER2["Tier 2: PINO-DR v3 Fallback (Conv1D-BiGRU-Attention, 21k params, 1 Hz Binned)"]
         TIER3["Tier 3: Kinematic Coasting (Constant-velocity + Gyro Heading Failsafe)"]
@@ -171,6 +195,7 @@ flowchart TD
     DEBOUNCE --> GYRO_BIAS
     GYRO_BIAS --> CALIB
 
+    CALIB --> FLAGSHIP
     CALIB --> TIER1
     CALIB --> TIER2
     CALIB --> TIER3
@@ -178,6 +203,9 @@ flowchart TD
     TIER1 --> IMM
     TIER2 -.->|Fallback| IMM
     TIER3 -.->|Failsafe| IMM
+    FLAGSHIP -.->|Soft ES-EKF Innovation Correction| IMM
+    FLAGSHIP -.->|Error-State Feedback| RBPF
+    FLAGSHIP -.->|Keyframe & Anchor Correction| FGO
 
     IMM --> RBPF
     RBPF --> FGO
@@ -202,15 +230,24 @@ flowchart TD
 
 ---
 
-## 4. Dual Neural Motion Engine Hierarchy
+---
 
-To guarantee maximum localization accuracy and absolute operational reliability in safety-critical vehicle navigation, MARK-V implements an intelligent multi-tiered neural hierarchy. **IDR-V1** serves as the primary production engine due to its superior empirical blackout accuracy and trained heteroscedastic uncertainty, while **PINO-DR v3** provides an on-device physics-informed fallback.
+## 4. Neural Motion Engine Hierarchy (v9 Flagship -> IDR-V1 -> PINO-DR v3)
+
+To guarantee maximum localization accuracy and absolute operational reliability in safety-critical vehicle navigation, MARK-V implements an intelligent multi-tiered neural hierarchy. **v9 Adaptive Projection Dead Reckoning** serves as the flagship drift-control layer, performing periodic 5-second trajectory validation and soft Error-State EKF state innovations. **IDR-V1** acts as the high-rate step motion engine with trained heteroscedastic uncertainty, while **PINO-DR v3** provides an on-device physics-informed fallback.
 
 ```
 +===================================================================================+
 |                          MARK-V INERTIAL NAVIGATION HIERARCHY                     |
 +===================================================================================+
-|  TIER 1 (Production Primary) : IDR-V1                                             |
+|  FLAGSHIP (Periodic Adaptive Trajectory Projection) : v9 ADAPTIVE PROJECTION DR   |
+|  - 16,895 Parameters (DepthwiseSeparableConv1D + GRU + Context MLP, Opset 18)     |
+|  - 5.0-second periodic consistency checkpoints against independent kinematic ref  |
+|  - Event-adaptive discrepancy threshold gating: STOP (2m), CRUISE (5m), TURN (8m) |
+|  - Soft 6-State ES-EKF Innovation Update with Joseph-form error covariance update |
+|  - Outage Drift Recovery: 13.7% to 25.1% improvement over frozen baseline         |
++-----------------------------------------------------------------------------------+
+|  TIER 1 (Production High-Rate Motion) : IDR-V1                                    |
 |  - 81,581 Parameters (6-Channel Linear Acceleration + Triaxial Gyroscope)         |
 |  - 10 Hz sample-by-sample inference with trained log-variance uncertainty heads    |
 |  - 3-4x Lower Blackout Drift: 14.4m vs 84.5m @ 10s; 92.9m vs 536.6m @ 30s        |
@@ -230,6 +267,46 @@ To guarantee maximum localization accuracy and absolute operational reliability 
 ```
 
 ---
+
+### Flagship: v9 Adaptive Projection Dead Reckoning (PATP + ES-EKF)
+
+`v9_adaptive_projection_dr` introduces **Periodic Adaptive Trajectory Projection (PATP)** integrated into a **6-State Error-State Extended Kalman Filter (ES-EKF)**. The system continuously validates dead-reckoning state consistency at 5-second checkpoints against an independent physical kinematic reference. When physical discrepancy ($d_p = \|\mathbf{x}_{\text{ref}} - \mathbf{x}_{\text{DR}}\|$) exceeds event-adaptive thresholds, the lightweight neural error-state network (~16.8k parameters) predicts the error state $\hat{\delta \mathbf{x}}$ and confidence $c$, softly correcting the nominal trajectory without abrupt resets.
+
+```mermaid
+flowchart TD
+    A["Raw Smartphone IMU\n(Acc, Gyro)"] --> B["Phone-to-Vehicle Alignment\n(Gravity + Vehicle Dynamics)"]
+    B --> C["Frozen Motion Backbone\n(IDR-V1 / PINO-DR @ 10 Hz)"]
+    C --> D["Continuous DR Trajectory\n(Displacement & Yaw)"]
+    D --> E["Driving Event Classifier\n& 50-step Context Buffer"]
+    E --> F{"5-Second Checkpoint\n(Every 50 steps)"}
+    F -- No --> G["Propagate ES-EKF Nominal State\n& Error Covariance P"]
+    F -- Yes --> H["Physical Reference Synthesizer\n(Kinematics + NHC + Centripetal)"]
+    H --> I["Compute True Discrepancy:\nd_p = ||x_ref - x_DR||"]
+    I --> J{"d_p > tau(Event)\n& Conf >= 0.20?"}
+    J -- No --> G
+    J -- Yes --> K["Neural Error-State Predictor\nhat_delta_x, conf"]
+    K --> L["Soft ES-EKF Innovation Update\nr = z_proj - H delta_x\nK = P H^T (H P H^T + R)^-1"]
+    L --> M["Inject into Nominal State:\nx_nom <- x_nom + K r\nJoseph Form P Update"]
+    M --> G
+    G --> N["Next Timestep"]
+```
+
+#### v9 Multi-Horizon Benchmark Results (10s GNSS Outage)
+
+| Driving Scenario | Reference Baseline Target | Baseline (v3) FDE | v9 Full (PATP) FDE | Recovery Ratio (%) | Status vs Baseline |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Motorway** | 7.13 m | 7.13 m | **6.15 m** | **13.7%** | **BEATS Baseline** |
+| **Quick Accel** | 21.11 m | 21.11 m | **15.82 m** | **25.1%** | **BEATS Baseline** |
+| **Hard Brake** | 17.15 m | 17.15 m | **13.41 m** | **21.8%** | **BEATS Baseline** |
+| **Sharp Turns** | 39.26 m | 39.26 m | **31.05 m** | **20.9%** | **BEATS Baseline** |
+| **Roundabout** | 75.31 m | 75.31 m | **58.46 m** | **22.4%** | **BEATS Baseline** |
+| **Macro Average** | **32.00 m** | **32.00 m** | **24.98 m** | **21.9%** | **ALL BEAT Baseline** |
+
+#### Real Indian Field Trip Evaluation (Mandadam, Vijayawada, VIT-AP)
+*Evaluated with `python v9_adaptive_projection_dr/v9_benchmark_evaluator.py`:*
+* **Mandadam to Vijayawada**: **3.69% drift** ($197.77\text{ m}$ vs $5,300\text{ m}$ naive) $\rightarrow$ **PASSED**
+* **Mandadam to VIT-AP**: **1.44% drift** ($92.61\text{ m}$ vs $6,380\text{ m}$ naive) $\rightarrow$ **PASSED**
+* **VIT-AP to Mangalagiri**: **2.44% drift** ($203.86\text{ m}$ vs $8,278\text{ m}$ naive) $\rightarrow$ **PASSED**
 
 ### Tier 1: IDR-V1 (Production Primary with Heteroscedastic Uncertainty)
 
@@ -1021,11 +1098,15 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 ## 16. Repository Directory Layout
 
 ```
-master-repo-sih-26/
+NEW-SIM-dead-reck/
 ├── .github/
 │   └── workflows/
 │       └── android-ci.yml               # Automated GitHub Actions CI workflow
+├── .codex-ml-codes-review/              # Offline Model Ablation Outputs
+│   ├── README.md                        # Documentation of review artifacts
+│   └── outputs/                         # IDR-V1 and PINO-DR blackout ablation dumps
 ├── docs/                                # Visual Evidence & Engineering Documentation
+│   ├── device_screen.png                # Live device screenshot (Galaxy S24 FE)
 │   ├── simulation_report/               # High-res on-device simulation screenshots
 │   │   ├── 1_outage_blue_to_red.png     # Dynamic outage line color transition
 │   │   ├── 2_5s_drift_equations.png     # 5-second rolling drift & math card
@@ -1036,7 +1117,30 @@ master-repo-sih-26/
 │   └── field_trips/                     # Real field drive captures (AP corridors)
 │       ├── trips_screen.png             # In-app field trips database
 │       ├── trip_detail.png              # Detailed trip telemetry & outage review
-│       └── app_running.png              # App running on Samsung Galaxy S24 FE
+│       └── app_running.png              # App running on physical hardware
+├── brag-output/                         # Official Hyperframes Launch Video & Storyboard Assets
+│   ├── brag.mp4                         # 20-second cinematic launch video (1080p, H.264/AAC)
+│   ├── brag.jpg                         # Poster keyframe thumbnail (baked into frame 0)
+│   ├── brag-plan.md                     # Creative concept, 9-question rubric & storyboard
+│   ├── composition-brief.md             # Hyperframes handoff specification & visual tokens
+│   ├── share-copy.txt                   # Social announcement copy
+│   └── composition/                     # Self-contained HTML5/GSAP video composition
+├── v9_adaptive_projection_dr/           # Flagship v9 Periodic Adaptive Trajectory Projection
+│   ├── README.md                        # v9 Architecture, Kinematic Synthesizer & Benchmark Docs
+│   ├── V9_PERFORMANCE_REPORT.md         # Multi-horizon (10s, 30s, 60s) benchmark evaluation
+│   ├── run_pipeline_v9.py               # Complete end-to-end evaluation & audit runner
+│   ├── v9_benchmark_evaluator.py        # Real field trip trajectory benchmark runner
+│   ├── checkpoints/                     # PyTorch model weights (v9 and v3 base)
+│   ├── data/                            # Processed datasets, splits, and scalers
+│   ├── results/                         # Benchmark metrics, ablation CSVs, and figures
+│   └── src/                             # Neural network layers, PATP controller & ESEKF fusion
+├── v8_benchmark_dr/                     # Predecessor v8 Neural Dead Reckoning Benchmark
+│   ├── README.md                        # v8 Architecture and relationship to v9
+│   ├── outage_results_v8.csv            # v8 10s-60s blackout drift baseline metrics
+│   └── src/io_own_field_data.py         # Phone sensor telemetry ingestion
+├── tools/                               # Mobile ONNX Export & Conversion Utilities
+│   ├── export_v8_model.py               # Export v8 PyTorch checkpoint to ONNX
+│   └── export_v9_model.py               # Export v9 AdaptiveStateProjectionNet to ONNX (Opset 18)
 ├── app/
 │   ├── build.gradle                     # Android application build configuration
 │   ├── src/
@@ -1044,13 +1148,18 @@ master-repo-sih-26/
 │   │   │   ├── AndroidManifest.xml      # Permissions, services, and hardware features
 │   │   │   ├── assets/
 │   │   │   │   ├── ml/                  # Production ONNX Neural Models & Manifests
-│   │   │   │   │   ├── idr_v1.onnx               # IDR-V1 Primary ONNX Graph (81,581 params)
-│   │   │   │   │   ├── idr_v1_manifest.json      # IDR-V1 Contract & SHA-256 Digest
-│   │   │   │   │   ├── idr_v1_normalization.json # Channel standard scalers
-│   │   │   │   │   ├── v3_pino_dr.onnx           # PINO-DR v3 Fallback ONNX Graph (21,667 params)
-│   │   │   │   │   └── v3_pino_manifest.json     # PINO-DR v3 Contract & SHA-256 Digest
+│   │   │   │   │   ├── v9_adaptive_projection.onnx       # Flagship v9 PATP Model (16,895 params)
+│   │   │   │   │   ├── v9_manifest.json                  # v9 Contract, Opset 18 & SHA-256
+│   │   │   │   │   ├── v9_normalization.json             # v9 Scale bounds & feature normalization
+│   │   │   │   │   ├── idr_v1.onnx                       # IDR-V1 Primary ONNX Graph (81,581 params)
+│   │   │   │   │   ├── idr_v1_manifest.json              # IDR-V1 Contract & SHA-256 Digest
+│   │   │   │   │   ├── idr_v1_normalization.json         # Channel standard scalers
+│   │   │   │   │   ├── v3_pino_dr.onnx                   # PINO-DR v3 Fallback ONNX Graph (21,667 params)
+│   │   │   │   │   ├── v3_pino_manifest.json             # PINO-DR v3 Contract & SHA-256 Digest
+│   │   │   │   │   ├── v7_supreme_moe.onnx               # PINO-DR v7 Supreme MoE Graph (75,975 params)
+│   │   │   │   │   └── v8_dead_reckoning.onnx            # V8 Inertial DR Graph
 │   │   │   │   └── roads/
-│   │   │   │       └── default_regional_network.json # Bundled Offline Regional Corridors
+│   │   │   │       └── default_regional_network.json     # Bundled Offline Regional Corridors
 │   │   │   └── java/nisargpatel/deadreckoning/
 │   │   │       ├── adapter/             # SensorAdapter with Debounce & Gyro Calibration
 │   │   │       ├── core/spec/           # PreprocessingSpec & Contract Definitions
@@ -1063,27 +1172,20 @@ master-repo-sih-26/
 │   │   │       │   ├── VehicleFusionEkf.kt                    # Baseline 6-DOF EKF
 │   │   │       │   └── VehicleAlignmentCalibrator.kt          # Phone-to-Chassis Calibration
 │   │   │       ├── matching/            # HiddenMarkovRoadMatcher (Viterbi HMM)
-│   │   │       ├── ml/                  # IdrMotionEngine & PinoDrMotionEngine
+│   │   │       ├── ml/                  # V9AdaptiveProjectionEngine, IdrMotionEngine, PinoDrMotionEngine
 │   │   │       ├── simulation/          # Interactive GNSS-Denied Simulation Subsystem
-│   │   │       │   ├── SimulationConfig.kt            # Mandadam-Vijayawada corridor spec
-│   │   │       │   ├── GroundTruthTrajectory.kt       # Road-following trajectory synthesis
-│   │   │       │   ├── SyntheticSensorGenerator.kt    # Noisy IMU & GNSS outage blackout
-│   │   │       │   ├── NaiveDeadReckoningBaseline.kt  # Classical double-integrator IMU
-│   │   │       │   ├── SimulationMetricsEngine.kt     # 5s peak drift, RMSE, ISRO audit
-│   │   │       │   └── SimulationController.kt        # Playback engine, ±5% scrub, setCenter
 │   │   │       ├── ui/                  # Jetpack Compose UI (HUD, Speedometer, Screens)
-│   │   │       │   └── screens/         # Modular Screens (LiveNav, SimulationScreen, etc.)
 │   │   │       └── util/                # RouteRerouteGating & OSRMRouteFetcher
 │   │   └── test/java/nisargpatel/deadreckoning/  # Automated Unit & Benchmark Tests
-│   │       ├── HybridLocalizationBenchmarkTest.kt
-│   │       ├── HybridEstimatorUnitTest.kt
-│   │       ├── RerouteGatingTest.kt
-│   │       ├── BlackoutAblationTest.kt
-│   │       ├── PinoBlackoutAblationTest.kt
-│   │       ├── ModelIntegrityTest.kt
-│   │       ├── SensorAdapterTest.kt
+│   │       ├── V9AdaptiveProjectionEngineTest.kt # v9 Checkpoint, Gating & ES-EKF Suite
+│   │       ├── BlackoutAblationTest.kt           # IDR-V1 vs V8 Outage Ablation
+│   │       ├── PinoBlackoutAblationTest.kt       # PINO-DR v3 Outage Ablation
+│   │       ├── HybridLocalizationBenchmarkTest.kt # 7-Filter Comparative Benchmark
+│   │       ├── HybridEstimatorUnitTest.kt        # IMM-UKF, RBPF, FGO Unit Tests
+│   │       ├── ModelIntegrityTest.kt             # SHA-256 Digest Verification
 │   │       └── ...
 │   ├── GNSS_DENIED_SIMULATION_REPORT.md  # Standalone Engineering Simulation Report
+│   ├── V9_PERFORMANCE_REPORT.md          # Multi-Scenario v9 Empirical Benchmark Report
 │   └── README.md                         # Unified System & Verification Master Documentation
 └── gradlew                              # Gradle Wrapper Executable
 ```

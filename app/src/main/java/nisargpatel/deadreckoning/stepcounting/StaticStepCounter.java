@@ -1,5 +1,12 @@
 package nisargpatel.deadreckoning.stepcounting;
 
+/**
+ * Legacy static-threshold pedestrian step counting engine.
+ *
+ * @deprecated Retained for backwards compatibility with legacy activities.
+ * Modern MARK-V vehicle navigation uses neural motion engines and fusion estimators.
+ */
+@Deprecated
 public class StaticStepCounter {
 
 	private boolean peakFound;

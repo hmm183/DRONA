@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>MARK-V Neural-Inertial Navigation Launch</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #06090e;
+        color: #f0f4f8;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: radial-gradient(circle at 50% 30%, #0d1524 0%, #06090e 85%);
+      }
+
+      /* Ambient tactical grid */
+      .tactical-grid {
+        position: absolute;
+        inset: 0;
+        background-image: 
+          linear-gradient(to right, rgba(0, 229, 255, 0.04) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(0, 229, 255, 0.04) 1px, transparent 1px);
+        background-size: 80px 80px;
+        pointer-events: none;
+      }
+
+      .vignette {
+        position: absolute;
+        inset: 0;
+        box-shadow: inset 0 0 160px rgba(0, 0, 0, 0.85);
+        pointer-events: none;
+      }
+
+      /* Common scene container */
+      .scene {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      /* Typography */
+      .badge-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 20px;
+        border-radius: 9999px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-bottom: 24px;
+      }
+
+      .badge-alert {
+        background: rgba(255, 23, 68, 0.16);
+        border: 1px solid #ff1744;
+        color: #ff5252;
+      }
+
+      .badge-success {
+        background: rgba(0, 230, 118, 0.16);
+        border: 1px solid #00e676;
+        color: #00e676;
+      }
+
+      .badge-cyan {
+        background: rgba(0, 229, 255, 0.16);
+        border: 1px solid #00e5ff;
+        color: #00e5ff;
+      }
+
+      .headline-main {
+        font-size: 68px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+        text-align: center;
+        max-width: 1400px;
+        color: #ffffff;
+      }
+
+      .sub-lead {
+        font-size: 26px;
+        font-weight: 400;
+        color: #94a3b8;
+        margin-top: 18px;
+        text-align: center;
+        max-width: 1000px;
+        line-height: 1.5;
+      }
+
+      /* Scene 1: Outage & Failover */
+      #scene-1 .radar-ping {
+        width: 120px;
+        height: 120px;
+        border: 2px solid #ff1744;
+        border-radius: 50%;
+        margin-bottom: 28px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #scene-1 .radar-inner {
+        width: 24px;
+        height: 24px;
+        background: #ff1744;
+        border-radius: 50%;
+      }
+
+      /* Scene 2: Tech Architecture Grid */
+      .cards-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 36px;
+        width: 1540px;
+        margin-top: 48px;
+      }
+
+      .tech-card {
+        background: rgba(17, 25, 39, 0.85);
+        border: 1px solid rgba(0, 229, 255, 0.22);
+        border-radius: 16px;
+        padding: 38px 32px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .tech-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #00e5ff, #00e676);
+      }
+
+      .card-chip {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 15px;
+        color: #00e5ff;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 14px;
+      }
+
+      .card-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 12px;
+        line-height: 1.25;
+      }
+
+      .card-desc {
+        font-size: 18px;
+        color: #94a3b8;
+        line-height: 1.5;
+      }
+
+      /* Scene 3: Live Cockpit Split View */
+      .cockpit-layout {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 80px;
+        width: 1640px;
+      }
+
+      .phone-wrapper {
+        position: relative;
+        width: 380px;
+        height: 760px;
+        background: #0f172a;
+        border-radius: 48px;
+        padding: 14px;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 50px rgba(0, 230, 118, 0.2);
+        border: 3px solid rgba(0, 230, 118, 0.4);
+      }
+
+      .phone-screen {
+        width: 100%;
+        height: 100%;
+        border-radius: 36px;
+        overflow: hidden;
+        background: #000;
+      }
+
+      .phone-screen img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .telemetry-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .telemetry-row {
+        background: rgba(17, 25, 39, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 24px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .tel-label {
+        font-size: 18px;
+        color: #94a3b8;
+        font-weight: 600;
+      }
+
+      .tel-val {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 28px;
+        font-weight: 700;
+        color: #00e676;
+      }
+
+      /* Scene 4: ISRO Benchmark */
+      .benchmark-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 48px;
+        width: 1540px;
+        margin-top: 40px;
+      }
+
+      .bench-box {
+        background: rgba(17, 25, 39, 0.9);
+        border-radius: 20px;
+        padding: 48px 40px;
+        text-align: center;
+      }
+
+      .bench-req {
+        border: 2px dashed rgba(255, 255, 255, 0.2);
+      }
+
+      .bench-win {
+        border: 2px solid #00e676;
+        box-shadow: 0 0 50px rgba(0, 230, 118, 0.25);
+        background: linear-gradient(180deg, rgba(17, 25, 39, 0.95) 0%, rgba(6, 32, 20, 0.9) 100%);
+      }
+
+      .bench-num {
+        font-size: 96px;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 800;
+        line-height: 1;
+        margin: 20px 0;
+      }
+
+      .num-dim {
+        color: #64748b;
+      }
+
+      .num-glow {
+        color: #00e676;
+        text-shadow: 0 0 40px rgba(0, 230, 118, 0.6);
+      }
+
+      .bench-caption {
+        font-size: 22px;
+        color: #cbd5e1;
+        font-weight: 600;
+      }
+
+      /* Scene 5: Outro */
+      #scene-5 .logo-title {
+        font-size: 90px;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        background: linear-gradient(135deg, #ffffff 30%, #00e5ff 70%, #00e676 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 20px;
+      }
+
+      #scene-5 .outro-tagline {
+        font-size: 32px;
+        color: #cbd5e1;
+        font-weight: 600;
+        margin-bottom: 36px;
+      }
+
+      .stack-pills {
+        display: flex;
+        gap: 16px;
+      }
+
+      .stack-pill {
+        padding: 10px 24px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 9999px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 16px;
+        color: #94a3b8;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="20"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div class="tactical-grid"></div>
+      <div class="vignette"></div>
+
+      <!-- Audio Track -->
+      <audio
+        id="bgm"
+        src="assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3"
+        data-start="0"
+        data-duration="20"
+        data-track-index="0"
+        data-volume="0.85"
+      ></audio>
+
+      <!-- SCENE 1: The Outage Alert (0.0s - 3.5s) -->
+      <div id="scene-1" class="scene" data-start="0" data-duration="3.5" data-track-index="1">
+        <div id="radar-icon" class="radar-ping">
+          <div class="radar-inner"></div>
+        </div>
+        <div id="s1-badge" class="badge-tag badge-alert">CRITICAL ALERT // SATELLITES: 0</div>
+        <h1 id="s1-title" class="headline-main">GPS SIGNAL LOST</h1>
+        <p id="s1-lead" class="sub-lead">Tunnels • Canyons • Jamming Environments</p>
+        <div id="s1-failover" class="badge-tag badge-success" style="opacity: 0; margin-top: 36px;">
+          FAILOVER ENGAGED: MARK-V V9 ACTIVE
+        </div>
+      </div>
+
+      <!-- SCENE 2: Tech Architecture (3.5s - 8.5s) -->
+      <div id="scene-2" class="scene" data-start="3.5" data-duration="5.0" data-track-index="1">
+        <div class="badge-tag badge-cyan">DEEP-TECH EDGE ARCHITECTURE</div>
+        <h2 class="headline-main">V9 Adaptive Projection PATP</h2>
+        <p class="sub-lead">Continuous on-device vehicle odometry with zero external signals</p>
+        
+        <div class="cards-container">
+          <div id="card-1" class="tech-card">
+            <div class="card-chip">Neural Engine</div>
+            <h3 class="card-title">PATP Transformer</h3>
+            <p class="card-desc">16.9K parameter lightweight polar-adapted model with sub-millisecond on-device latency.</p>
+          </div>
+          <div id="card-2" class="tech-card">
+            <div class="card-chip">State Estimation</div>
+            <h3 class="card-title">Hybrid IMM-UKF</h3>
+            <p class="card-desc">Interacting multiple models + RBPF + sliding-window factor graph optimization.</p>
+          </div>
+          <div id="card-3" class="tech-card">
+            <div class="card-chip">Sensor Fusion</div>
+            <h3 class="card-title">100Hz IMU Kinematics</h3>
+            <p class="card-desc">Raw 6-DoF accelerometer & gyroscope fusion with dynamic bias compensation.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCENE 3: The Live Cockpit (8.5s - 14.5s) -->
+      <div id="scene-3" class="scene" data-start="8.5" data-duration="6.0" data-track-index="1">
+        <div class="cockpit-layout">
+          <div id="phone-mockup" class="phone-wrapper">
+            <div class="phone-screen">
+              <img src="assets/images/device_screen.png" alt="MARK-V Live App Screen">
+            </div>
+          </div>
+          <div class="telemetry-panel">
+            <div class="badge-tag badge-success">LIVE SENSOR TELEMETRY</div>
+            <h2 style="font-size: 48px; font-weight: 800; line-height: 1.2; color: #ffffff;">
+              Tactical Android Cockpit
+            </h2>
+            <p style="font-size: 20px; color: #94a3b8; margin-bottom: 8px;">
+              Real-time vehicle dead reckoning running on consumer mobile hardware.
+            </p>
+            <div class="telemetry-row">
+              <span class="tel-label">Linear Odometry Velocity</span>
+              <span class="tel-val">18.4 m/s</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="tel-label">Pitch / Roll Attitude</span>
+              <span class="tel-val">-1.2° / +0.4°</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="tel-label">Navigation Verification</span>
+              <span class="tel-val" style="color: #00e5ff;">130+ Unit Tests PASS</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="tel-label">Dead-Reckoning Mode</span>
+              <span class="tel-val">V9 PATP + FGO</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCENE 4: ISRO Benchmark Mandate (14.5s - 18.0s) -->
+      <div id="scene-4" class="scene" data-start="14.5" data-duration="3.5" data-track-index="1">
+        <div class="badge-tag badge-alert">ISRO PS26168 BENCHMARK</div>
+        <h2 class="headline-main">Outage Drift Mandate Shattered</h2>
+        
+        <div class="benchmark-grid">
+          <div id="bench-mandate" class="bench-box bench-req">
+            <div class="card-chip" style="color: #94a3b8;">ISRO Mandate Requirement</div>
+            <div class="bench-num num-dim">&lt; 10.0%</div>
+            <div class="bench-caption">Maximum allowable outage drift rate</div>
+          </div>
+          <div id="bench-markv" class="bench-box bench-win">
+            <div class="card-chip" style="color: #00e676;">MARK-V Achieved Drift</div>
+            <div class="bench-num num-glow">0.11%</div>
+            <div class="bench-caption">1.44% – 3.69% in real Andhra Pradesh road trips</div>
+          </div>
+        </div>
+        
+        <div id="factor-badge" class="badge-tag badge-success" style="font-size: 24px; padding: 12px 36px; margin-top: 36px;">
+          9x BEYOND SPECIFICATION REQUIREMENT
+        </div>
+      </div>
+
+      <!-- SCENE 5: Mission Outro (18.0s - 20.0s) -->
+      <div id="scene-5" class="scene" data-start="18.0" data-duration="2.0" data-track-index="1">
+        <h1 class="logo-title">MARK-V NAVIGATION</h1>
+        <p class="outro-tagline">When the sky goes dark, navigation continues.</p>
+        <div class="stack-pills">
+          <div class="stack-pill">ISRO PS26168</div>
+          <div class="stack-pill">V9 PATP ENGINE</div>
+          <div class="stack-pill">KOTLIN • TENSORFLOW LITE</div>
+          <div class="stack-pill">OPEN SOURCE</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines["main"] = tl;
+
+      // Ensure seek-safe initial state
+      gsap.set(".scene", { autoAlpha: 0 });
+
+      // SCENE 1: 0.0s - 3.5s
+      tl.set("#scene-1", { autoAlpha: 1 }, 0.0);
+      tl.fromTo("#radar-icon", { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.7)" }, 0.2);
+      tl.fromTo("#s1-badge", { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4 }, 0.3);
+      tl.fromTo("#s1-title", { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "power3.out" }, 0.5);
+      tl.fromTo("#s1-lead", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 0.8);
+      // Failover trigger at 1.8s
+      tl.to("#radar-icon", { borderColor: "#00e676", duration: 0.3 }, 1.8);
+      tl.to("#radar-icon .radar-inner", { backgroundColor: "#00e676", duration: 0.3 }, 1.8);
+      tl.fromTo("#s1-failover", { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }, 1.8);
+      tl.to("#scene-1", { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, 3.2);
+
+      // SCENE 2: 3.5s - 8.5s
+      tl.set("#scene-2", { autoAlpha: 1 }, 3.5);
+      tl.fromTo("#scene-2 .badge-tag", { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4 }, 3.6);
+      tl.fromTo("#scene-2 .headline-main", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 3.8);
+      tl.fromTo("#scene-2 .sub-lead", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 4.1);
+      // Cascade cards on beat grid
+      tl.fromTo("#card-1", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 4.5);
+      tl.fromTo("#card-2", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 5.0);
+      tl.fromTo("#card-3", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 5.5);
+      tl.to("#scene-2", { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, 8.2);
+
+      // SCENE 3: 8.5s - 14.5s (beat-locked entry at 8.74s)
+      tl.set("#scene-3", { autoAlpha: 1 }, 8.5);
+      tl.fromTo("#phone-mockup", { x: -80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 8.74);
+      tl.fromTo(".telemetry-panel", { x: 80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 8.74);
+      tl.fromTo(".telemetry-row", { opacity: 0, x: 30 }, { opacity: 1, x: 0, stagger: 0.2, duration: 0.4, ease: "power2.out" }, 9.3);
+      tl.to("#scene-3", { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, 14.2);
+
+      // SCENE 4: 14.5s - 18.0s (payoff reveals on 15.29s & 17.47s)
+      tl.set("#scene-4", { autoAlpha: 1 }, 14.5);
+      tl.fromTo("#scene-4 .badge-tag", { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4 }, 14.6);
+      tl.fromTo("#scene-4 .headline-main", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, 14.8);
+      tl.fromTo("#bench-mandate", { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "power2.out" }, 15.1);
+      tl.fromTo("#bench-markv", { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: "back.out(1.8)" }, 15.29); // beat-locked: 15.29s
+      tl.fromTo("#factor-badge", { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }, 17.47); // beat-locked: 17.47s
+      tl.to("#scene-4", { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, 17.7);
+
+      // SCENE 5: 18.0s - 20.0s
+      tl.set("#scene-5", { autoAlpha: 1 }, 18.0);
+      tl.fromTo("#scene-5 .logo-title", { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: "power3.out" }, 18.2);
+      tl.fromTo("#scene-5 .outro-tagline", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, 18.6);
+      tl.fromTo(".stack-pill", { opacity: 0, y: 15 }, { opacity: 1, y: 0, stagger: 0.1, duration: 0.3 }, 18.9);
+
+      // Audio fade out at the very end
+      tl.to("#bgm", { volume: 0, duration: 1.0 }, 19.0);
+
+      tl.seek(0);
+    </script>
+  </body>
+</html>

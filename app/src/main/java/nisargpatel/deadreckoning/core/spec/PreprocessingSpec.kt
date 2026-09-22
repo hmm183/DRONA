@@ -212,6 +212,26 @@ data class PreprocessingSpec(
         )
 
         const val PINO_V7_RAW_SAMPLE_RATE_HZ = 10
+
+        /**
+         * v9 Adaptive Projection Dead Reckoning (PATP + ES-EKF).
+         * Temporal sequence: 50 samples at 10 Hz (5.0s window).
+         * 8 channels: [a_fwd, a_lat, w_yaw, speed_norm, a_cent, cent_res, delta_psi, jerk].
+         * Context vector: 12 features [d_p, d_v, d_yaw, v_curr, 8-class event onehot].
+         */
+        val V9_PROJECTION = PreprocessingSpec(
+            version = "v9-projection",
+            sampleRateHz = 10,
+            windowSamples = 50,
+            strideSamples = 50,
+            frame = ImuFrame.VEHICLE_FRD,
+            gravity = GravityHandling.REMOVED,
+            gyroOrder = GyroChannelOrder.VEHICLE_YAW_PITCH_ROLL,
+            channelNames = listOf(
+                "a_fwd", "a_lat", "w_yaw", "speed_norm",
+                "centripetal_acc", "centripetal_residual", "delta_psi_step", "jerk"
+            )
+        )
     }
 }
 

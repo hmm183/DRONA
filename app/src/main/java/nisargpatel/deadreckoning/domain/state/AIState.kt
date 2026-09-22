@@ -18,5 +18,8 @@ data class AIState(
     val headingUncertaintyDegrees: Double = 0.0,
     val predictionHz: Double = 0.0,
     val dominantExpert: String = "",
-    val expertWeights: List<Float> = emptyList()
+    val expertWeights: List<Float> = emptyList(),
+    val v9Event: String = "",
+    val v9DiscrepancyMeters: Float = 0.0f,
+    val v9ProjectionsCount: Int = 0
 )

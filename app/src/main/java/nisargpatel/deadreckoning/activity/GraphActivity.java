@@ -237,14 +237,14 @@ public class GraphActivity extends AppCompatActivity implements SensorEventListe
                     dataFileWriter.writeToFile("Magnetic_Field_Uncalibrated", "Magnetic_field_bias:" +
                             Arrays.toString(magBias));
 
-                    fabButton.setImageDrawable(ContextCompat.getDrawable(GraphActivity.this, R.drawable.ic_pause_black_24dp));
+                    fabButton.setImageDrawable(ContextCompat.getDrawable(GraphActivity.this, R.drawable.ic_pause));
 
                 } else {
 
                     firstRun = true;
                     isRunning = false;
 
-                    fabButton.setImageDrawable(ContextCompat.getDrawable(GraphActivity.this, R.drawable.ic_play_arrow_black_24dp));
+                    fabButton.setImageDrawable(ContextCompat.getDrawable(GraphActivity.this, R.drawable.ic_play));
 
                 }
 
@@ -338,11 +338,11 @@ public class GraphActivity extends AppCompatActivity implements SensorEventListe
                         SensorManager.SENSOR_DELAY_FASTEST);
             }
 
-            fabButton.setImageDrawable(ContextCompat.getDrawable(GraphActivity.this, R.drawable.ic_pause_black_24dp));
+            fabButton.setImageDrawable(ContextCompat.getDrawable(GraphActivity.this, R.drawable.ic_pause));
 
         } else {
 
-            fabButton.setImageDrawable(ContextCompat.getDrawable(GraphActivity.this, R.drawable.ic_play_arrow_black_24dp));
+            fabButton.setImageDrawable(ContextCompat.getDrawable(GraphActivity.this, R.drawable.ic_play));
 
         }
 

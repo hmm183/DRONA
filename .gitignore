@@ -16,3 +16,8 @@ app/build
 # IO-VNBD training corpus, ~415 MB of CSV. Pasted in locally and reached by the
 # junction under .codex-ml-codes-review/data. Never belongs in git.
 /Categorised IOVNB Dataset/
+
+# Python & Node build artifacts
+__pycache__/
+*.py[cod]
+node_modules/

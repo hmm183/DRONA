@@ -1,0 +1,82 @@
+[
+  {
+    "Configuration": "Config A: Pure V3",
+    "Macro FDE (m)": 31.78,
+    "Recovery Ratio (%)": 0.0,
+    "Motorway (m)": 7.13,
+    "Quick Accel (m)": 21.11,
+    "Hard Brake (m)": 16.55,
+    "Sharp Turns (m)": 38.81,
+    "Roundabout (m)": 75.31
+  },
+  {
+    "Configuration": "Config B: V3 + EKF",
+    "Macro FDE (m)": 31.78,
+    "Recovery Ratio (%)": 0.0,
+    "Motorway (m)": 7.13,
+    "Quick Accel (m)": 21.11,
+    "Hard Brake (m)": 16.55,
+    "Sharp Turns (m)": 38.81,
+    "Roundabout (m)": 75.31
+  },
+  {
+    "Configuration": "Config C: v9 Full System",
+    "Macro FDE (m)": 31.352,
+    "Recovery Ratio (%)": 1.35,
+    "Motorway (m)": 7.12,
+    "Quick Accel (m)": 20.71,
+    "Hard Brake (m)": 16.34,
+    "Sharp Turns (m)": 38.27,
+    "Roundabout (m)": 74.33
+  },
+  {
+    "Configuration": "Config D: Fixed 5m Threshold",
+    "Macro FDE (m)": 31.238,
+    "Recovery Ratio (%)": 1.71,
+    "Motorway (m)": 7.12,
+    "Quick Accel (m)": 20.69,
+    "Hard Brake (m)": 16.31,
+    "Sharp Turns (m)": 37.96,
+    "Roundabout (m)": 74.11
+  },
+  {
+    "Configuration": "Config E: No Confidence Gate",
+    "Macro FDE (m)": 31.238,
+    "Recovery Ratio (%)": 1.71,
+    "Motorway (m)": 7.12,
+    "Quick Accel (m)": 20.69,
+    "Hard Brake (m)": 16.31,
+    "Sharp Turns (m)": 37.96,
+    "Roundabout (m)": 74.11
+  },
+  {
+    "Configuration": "Config F: Forced Overwrite",
+    "Macro FDE (m)": 30.753,
+    "Recovery Ratio (%)": 3.23,
+    "Motorway (m)": 7.11,
+    "Quick Accel (m)": 20.4,
+    "Hard Brake (m)": 16.1,
+    "Sharp Turns (m)": 37.17,
+    "Roundabout (m)": 72.99
+  },
+  {
+    "Configuration": "Config G: No ZUPT",
+    "Macro FDE (m)": 31.238,
+    "Recovery Ratio (%)": 1.71,
+    "Motorway (m)": 7.12,
+    "Quick Accel (m)": 20.69,
+    "Hard Brake (m)": 16.31,
+    "Sharp Turns (m)": 37.96,
+    "Roundabout (m)": 74.11
+  },
+  {
+    "Configuration": "Config H: Fast 2s Checkpoint",
+    "Macro FDE (m)": 31.238,
+    "Recovery Ratio (%)": 1.71,
+    "Motorway (m)": 7.12,
+    "Quick Accel (m)": 20.69,
+    "Hard Brake (m)": 16.31,
+    "Sharp Turns (m)": 37.96,
+    "Roundabout (m)": 74.11
+  }
+]

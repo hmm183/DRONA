@@ -131,6 +131,33 @@ class VehicleFusionImmUkf(
     }
 
     /**
+     * Soft Error-State Innovation injection (e.g. from v9 Adaptive Projection DR).
+     * Adjusts the mode states softly by the error-state vector scaled by prediction confidence.
+     */
+    fun applyErrorState(
+        deltaEastMeters: Double,
+        deltaNorthMeters: Double,
+        deltaSpeedMps: Double = 0.0,
+        deltaHeadingRad: Double = 0.0,
+        confidence: Float = 1.0f
+    ) {
+        if (reference == null) return
+        val c = confidence.toDouble().coerceIn(0.0, 1.0)
+        val dE = deltaEastMeters * c
+        val dN = deltaNorthMeters * c
+        val dV = deltaSpeedMps * c
+        val dPsi = deltaHeadingRad * c
+
+        for (m in 0 until NUM_MODES) {
+            modeStates[m][IDX_PE] += dE
+            modeStates[m][IDX_PN] += dN
+            modeStates[m][IDX_SPEED] = (modeStates[m][IDX_SPEED] + dV).coerceAtLeast(0.0)
+            modeStates[m][IDX_HEADING] = MatrixMath.normalizeRadians(modeStates[m][IDX_HEADING] + dPsi)
+        }
+        combineOutput()
+    }
+
+    /**
      * Kinematic point propagation conditioned on mode.
      */
     private fun propagateModePoint(

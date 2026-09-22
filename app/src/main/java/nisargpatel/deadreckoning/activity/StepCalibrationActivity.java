@@ -22,6 +22,13 @@ import nisargpatel.deadreckoning.extra.ExtraFunctions;
 import nisargpatel.deadreckoning.interfaces.OnPreferredStepCounterListener;
 import nisargpatel.deadreckoning.stepcounting.DynamicStepCounter;
 
+/**
+ * Legacy pedestrian step calibration activity from 2016 open-source base.
+ *
+ * @deprecated Retained for AndroidManifest backwards compatibility.
+ * Modern vehicle alignment calibration is handled by [nisargpatel.deadreckoning.fusion.VehicleAlignmentCalibrator].
+ */
+@Deprecated
 public class StepCalibrationActivity extends AppCompatActivity implements SensorEventListener, OnPreferredStepCounterListener {
 
     private TextView textAndroidSteps;

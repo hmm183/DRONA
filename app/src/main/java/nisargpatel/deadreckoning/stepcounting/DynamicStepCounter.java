@@ -1,5 +1,13 @@
 package nisargpatel.deadreckoning.stepcounting;
 
+/**
+ * Legacy pedestrian step counting engine from original 2016 pedometer base.
+ *
+ * @deprecated Retained strictly for backwards compatibility with legacy activities.
+ * Modern MARK-V vehicle navigation relies on [nisargpatel.deadreckoning.ml] neural motion engines
+ * and [nisargpatel.deadreckoning.fusion.VehicleHierarchicalHybridEstimator] for vehicle dead reckoning.
+ */
+@Deprecated
 public class DynamicStepCounter {
 
     public static final int REQUIRED_HZ = 500;

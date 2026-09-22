@@ -81,6 +81,23 @@ class VehicleSlidingWindowFgo(
         )
     }
 
+    /**
+     * Soft Error-State Innovation injection (e.g. from v9 Adaptive Projection DR).
+     * Shifts anchor and all active keyframe states in local ENU frame.
+     */
+    fun applyErrorState(deltaEastMeters: Double, deltaNorthMeters: Double, confidence: Float = 1.0f) {
+        if (reference == null || keyframes.isEmpty()) return
+        val c = confidence.toDouble().coerceIn(0.0, 1.0)
+        val dE = deltaEastMeters * c
+        val dN = deltaNorthMeters * c
+        anchorPe += dE
+        anchorPn += dN
+        for (kf in keyframes) {
+            kf.pe += dE
+            kf.pn += dN
+        }
+    }
+
     override fun predict(
         forwardMeters: Double,
         lateralMeters: Double,
