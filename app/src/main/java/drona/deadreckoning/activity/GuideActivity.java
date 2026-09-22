@@ -157,9 +157,9 @@ public class GuideActivity extends AppCompatActivity {
 
         items.add(new GuideItem(
             "About & Credits",
-            "Dead Reckoning Pro (BETA)\n\n" +
-            "Original Project:\n" +
-            "https://github.com/dronanp/DeadReckoning\n\n" +
+            "DRONA — GNSS-Denied Intelligent Navigation\n\n" +
+            "Project Repository:\n" +
+            "https://github.com/drona/deadreckoning\n\n" +
             "Libraries Used:\n" +
             "• OSMDroid (OpenStreetMap)\n" +
             "• Google Play Services Location\n" +

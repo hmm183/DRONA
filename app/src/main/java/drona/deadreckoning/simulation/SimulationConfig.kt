@@ -20,12 +20,12 @@ data class OutageInterval(
 data class SimulationConfig(
     val randomSeed: Long = 26168L,
     val simulationSpeedMultiplier: Float = 1.0f,
-    val blackoutStartPct: Float = 0.10f,
-    val blackoutEndPct: Float = 0.20f,
+    val blackoutStartPct: Float = 0.04f,
+    val blackoutEndPct: Float = 0.08f,
     val stepFrequencyHz: Double = 10.0,
     val vehicleSpeedKmh: Double = 42.0,
 
-    // Multiple outage intervals (overrides single blackout if non-empty)
+    // Multiple outage intervals (empty by default so custom blackoutStartPct..blackoutEndPct works as expected)
     val outageIntervals: List<OutageInterval> = emptyList(),
     
     // Sensor error parameters (realistic automotive grade MEMS)
@@ -35,11 +35,18 @@ data class SimulationConfig(
     val gnssNoiseStdMeters: Double = 2.2,
     val aiSpeedNoiseStdMps: Double = 0.35,
 
-    // Default route: Mandadam -> Vijayawada
-    val sourcePoint: GeoPoint = GeoPoint(16.5160, 80.5780),
+    // Default route: Mandadam -> Vijayawada (True highway road endpoints)
+    val sourcePoint: GeoPoint = GeoPoint(16.5142, 80.5652),
     val destinationPoint: GeoPoint = GeoPoint(16.5062, 80.6480),
     val routeName: String = "Mandadam to Vijayawada"
 ) {
+    companion object {
+        val DEFAULT_MULTI_OUTAGES = listOf(
+            OutageInterval(0.04f, 0.08f),
+            OutageInterval(0.12f, 0.16f)
+        )
+    }
+
     val dtSeconds: Double get() = 1.0 / stepFrequencyHz
 
     /** All outage intervals — uses multi-outage list if provided, else falls back to single blackout */

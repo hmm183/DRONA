@@ -49,7 +49,7 @@ object PlaceSearchHelper {
                 requestMethod = "GET"
                 connectTimeout = 4500
                 readTimeout = 5000
-                setRequestProperty("User-Agent", "DeadReckoningPro/1.0 (Android)")
+                setRequestProperty("User-Agent", "DRONA/1.0 (Android)")
             }
 
             if (conn.responseCode == 200) {

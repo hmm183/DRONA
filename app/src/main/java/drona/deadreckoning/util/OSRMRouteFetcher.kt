@@ -72,7 +72,7 @@ object OSRMRouteFetcher {
                     requestMethod = "GET"
                     connectTimeout = 6000
                     readTimeout = 8000
-                    setRequestProperty("User-Agent", "DeadReckoningPro/1.0 (Android)")
+                    setRequestProperty("User-Agent", "DRONA/1.0 (Android)")
                 }
 
                 if (connection.responseCode == 200) {

@@ -34,7 +34,7 @@ data class OutageMarkerInfo(
 
 data class SimulationState(
     val status: SimulationStatus = SimulationStatus.IDLE,
-    val config: SimulationConfig = SimulationConfig(),
+    val config: SimulationConfig = SimulationConfig(outageIntervals = SimulationConfig.DEFAULT_MULTI_OUTAGES),
     val currentStepIndex: Int = 0,
     val totalSteps: Int = 0,
     val progressFraction: Float = 0.0f,
@@ -85,7 +85,7 @@ class SimulationController(
     private val context: Context,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 ) {
-    private var config = SimulationConfig()
+    private var config = SimulationConfig(outageIntervals = SimulationConfig.DEFAULT_MULTI_OUTAGES)
 
     private val _state = MutableStateFlow(SimulationState())
     val state: StateFlow<SimulationState> = _state.asStateFlow()
@@ -119,8 +119,8 @@ class SimulationController(
     // Route caching for canonical routes
     companion object {
         val CANONICAL_ROUTES = listOf(
-            RouteOption("Mandadam ↔ Vijayawada", GeoPoint(16.5160, 80.5780), GeoPoint(16.5062, 80.6480)),
-            RouteOption("Mandadam ↔ VIT-AP", GeoPoint(16.5160, 80.5780), GeoPoint(16.4965, 80.5005)),
+            RouteOption("Mandadam ↔ Vijayawada", GeoPoint(16.5142, 80.5652), GeoPoint(16.5062, 80.6480)),
+            RouteOption("Mandadam ↔ VIT-AP", GeoPoint(16.5142, 80.5652), GeoPoint(16.4965, 80.5005)),
             RouteOption("VIT-AP ↔ Mangalagiri", GeoPoint(16.4965, 80.5005), GeoPoint(16.4300, 80.5700))
         )
     }
@@ -140,6 +140,29 @@ class SimulationController(
         }
     }
 
+    private fun loadBundledRoutePoints(name: String): List<GeoPoint>? = runCatching {
+        val jsonString = context.assets.open("trips/field_trips.json").bufferedReader().use { it.readText() }
+        val array = org.json.JSONArray(jsonString)
+        for (i in 0 until array.length()) {
+            val obj = array.getJSONObject(i)
+            val label = obj.optString("label")
+            val tripId = obj.optString("trip_id")
+            val isMatch = (name.contains("Vijayawada", ignoreCase = true) && (tripId.contains("vijayawada") || label.contains("Vijayawada"))) ||
+                    (name.contains("VIT", ignoreCase = true) && name.contains("Mandadam", ignoreCase = true) && (tripId.contains("vitap") || label.contains("VIT-AP"))) ||
+                    (name.contains("Mangalagiri", ignoreCase = true) && (tripId.contains("mangalagiri") || label.contains("Mangalagiri")))
+            if (isMatch) {
+                val pathJson = obj.getJSONArray("path_gnss")
+                val pts = ArrayList<GeoPoint>(pathJson.length())
+                for (p in 0 until pathJson.length()) {
+                    val coord = pathJson.getJSONArray(p)
+                    pts.add(GeoPoint(coord.getDouble(0), coord.getDouble(1)))
+                }
+                if (pts.size >= 2) return@runCatching pts
+            }
+        }
+        null
+    }.getOrNull()
+
     fun loadPresetRoute(option: RouteOption) {
         scope.launch {
             _state.value = _state.value.copy(status = SimulationStatus.IDLE)
@@ -151,19 +174,29 @@ class SimulationController(
 
             addLog("[00:00.0] Loading route: ${option.name}")
 
-            // Attempt OSRM route fetch; fallback to realistic street corridor if offline
-            val fetched = try {
-                OSRMRouteFetcher.fetchRoute(option.start, option.end, option.name)
-            } catch (e: Exception) {
-                OSRMRouteFetcher.generateStreetGridRoute(option.start, option.end, option.name)
+            // Prefer locked high-fidelity road coordinates from bundled field trips to prevent ferry line diversions
+            val bundled = loadBundledRoutePoints(option.name)
+            val points = if (bundled != null && bundled.size >= 2) {
+                bundled
+            } else {
+                val fetched = try {
+                    OSRMRouteFetcher.fetchRoute(option.start, option.end, option.name)
+                } catch (e: Exception) {
+                    OSRMRouteFetcher.generateStreetGridRoute(option.start, option.end, option.name)
+                }
+                if (fetched.routePoints.size >= 2) fetched.routePoints else listOf(option.start, option.end)
             }
 
-            routePoints = if (fetched.routePoints.size >= 2) fetched.routePoints else {
-                listOf(option.start, option.end)
-            }
-
+            routePoints = points
             rebuildTrajectory()
-            addLog("[00:00.0] Route loaded: ${routePoints.size} waypoints (${String.format(Locale.US, "%.2f", fetched.totalDistanceKm)} km)")
+            val totalKm = if (routePoints.size >= 2) {
+                var d = 0.0
+                for (i in 0 until routePoints.size - 1) {
+                    d += routePoints[i].distanceToAsDouble(routePoints[i + 1])
+                }
+                d / 1000.0
+            } else 0.0
+            addLog("[00:00.0] Route locked: ${routePoints.size} waypoints (${String.format(Locale.US, "%.2f", totalKm)} km)")
         }
     }
 

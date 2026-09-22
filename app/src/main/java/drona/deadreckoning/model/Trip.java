@@ -138,7 +138,7 @@ public class Trip {
         ensureListsInitialized();
         StringBuilder sb = new StringBuilder();
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-        sb.append("<gpx version=\"1.1\" creator=\"DeadReckoningPro\" \n");
+        sb.append("<gpx version=\"1.1\" creator=\"DRONA\" \n");
         sb.append("     xmlns=\"http://www.topografix.com/GPX/1/1\" \n");
         sb.append("     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n");
         sb.append("     xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\">\n");

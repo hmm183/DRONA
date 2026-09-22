@@ -15,7 +15,7 @@ public class DeadReckoningApp extends Application {
 
     private static DeadReckoningApp instance;
 
-    private static final String USER_AGENT = "DeadReckoningPro/1.0 (Android; drona.deadreckoning)";
+    private static final String USER_AGENT = "DRONA/1.0 (Android; drona.deadreckoning)";
 
     @Override
     public void onCreate() {

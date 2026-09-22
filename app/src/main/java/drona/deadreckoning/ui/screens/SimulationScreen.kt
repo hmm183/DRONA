@@ -989,10 +989,11 @@ private fun SimulationConfigDialog(
     var selectedPreset by remember {
         mutableStateOf(
             when {
-                currentConfig.outageIntervals.size == 2 -> 1
-                currentConfig.outageIntervals.size >= 3 -> 2
-                currentConfig.outageIntervals.isNotEmpty() -> 3
-                else -> 0
+                currentConfig.outageIntervals.size == 2 &&
+                    currentConfig.outageIntervals[0].startPct == 0.04f -> 0
+                currentConfig.outageIntervals.size >= 3 -> 1
+                currentConfig.outageIntervals.isEmpty() -> 2
+                else -> 3
             }
         )
     }
@@ -1002,7 +1003,7 @@ private fun SimulationConfigDialog(
         mutableStateOf(
             if (currentConfig.outageIntervals.isNotEmpty()) {
                 currentConfig.outageIntervals.joinToString(", ") { "${(it.startPct * 100).toInt()}-${(it.endPct * 100).toInt()}" }
-            } else "10-14, 22-26"
+            } else "4-8, 12-16"
         )
     }
     var gyroBias by remember { mutableStateOf(currentConfig.gyroBiasDps.toString()) }
@@ -1035,28 +1036,24 @@ private fun SimulationConfigDialog(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 // Outage Architecture Preset Chips
-                Text("Outage Mode & Duration", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF475569))
+                Text("Outage Architecture (30s Short Window Presets)", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF475569))
                 Spacer(modifier = Modifier.height(6.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    val presets = listOf("Single 10%", "Dual 4%", "Triple 3%", "Custom")
+                    val presets = listOf("Dual 4%", "Triple 3%", "Single 10%", "Custom")
                     presets.forEachIndexed { idx, label ->
                         FilterChip(
                             selected = selectedPreset == idx,
                             onClick = {
                                 selectedPreset = idx
                                 when (idx) {
-                                    0 -> {
-                                        blackoutStart = "10"
-                                        blackoutEnd = "20"
-                                    }
-                                    1 -> {
-                                        customIntervalsText = "10-14, 22-26"
-                                    }
+                                    0 -> customIntervalsText = "4-8, 12-16"
+                                    1 -> customIntervalsText = "3-6, 9-12, 15-18"
                                     2 -> {
-                                        customIntervalsText = "8-11, 18-21, 30-33"
+                                        blackoutStart = "5"
+                                        blackoutEnd = "15"
                                     }
                                 }
                             },
@@ -1067,7 +1064,7 @@ private fun SimulationConfigDialog(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                if (selectedPreset == 0) {
+                if (selectedPreset == 2) {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedTextField(
                             value = blackoutStart,
@@ -1086,7 +1083,7 @@ private fun SimulationConfigDialog(
                     OutlinedTextField(
                         value = customIntervalsText,
                         onValueChange = { customIntervalsText = it },
-                        label = { Text("Outage Windows (% ranges, e.g. 10-14, 22-26)", fontSize = 11.sp) },
+                        label = { Text("Outage Windows (% ranges, e.g. 4-8, 12-16)", fontSize = 11.sp) },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -1116,14 +1113,14 @@ private fun SimulationConfigDialog(
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
                         onClick = {
-                            val intervals = if (selectedPreset != 0) {
+                            val intervals = if (selectedPreset != 2) {
                                 parseIntervals(customIntervalsText)
                             } else emptyList()
 
                             val newCfg = currentConfig.copy(
                                 randomSeed = seed.toLongOrNull() ?: currentConfig.randomSeed,
-                                blackoutStartPct = (blackoutStart.toFloatOrNull() ?: 10f) / 100f,
-                                blackoutEndPct = (blackoutEnd.toFloatOrNull() ?: 20f) / 100f,
+                                blackoutStartPct = (blackoutStart.toFloatOrNull() ?: 4f) / 100f,
+                                blackoutEndPct = (blackoutEnd.toFloatOrNull() ?: 8f) / 100f,
                                 outageIntervals = intervals,
                                 gyroBiasDps = gyroBias.toDoubleOrNull() ?: currentConfig.gyroBiasDps
                             )

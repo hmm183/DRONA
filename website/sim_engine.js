@@ -58,31 +58,31 @@
   // 2. Outage Architecture Presets
   const OUTAGE_PRESETS = {
     'single_10': {
-      name: 'Single Outage (10% - 20%)',
-      desc: 'Standard continuous 10% GNSS blackout (~900m)',
-      intervals: [{ start: 0.10, end: 0.20 }]
+      name: 'Single Outage (4% - 10%)',
+      desc: 'Continuous early GNSS blackout (~540m)',
+      intervals: [{ start: 0.04, end: 0.10 }]
     },
     'dual_4': {
       name: 'Dual Short Outages (4% each)',
-      desc: 'Two shorter outages: 10%-14% and 22%-26% (~360m each)',
+      desc: 'Two short outages: 4%-8% (start) and 12%-16% (middle) (~360m each)',
       intervals: [
-        { start: 0.10, end: 0.14 },
-        { start: 0.22, end: 0.26 }
+        { start: 0.04, end: 0.08 },
+        { start: 0.12, end: 0.16 }
       ]
     },
     'triple_3': {
       name: 'Triple Micro Outages (3% each)',
-      desc: 'Three micro outages: 8%-11%, 18%-21%, and 30%-33%',
+      desc: 'Three micro outages: 3%-6%, 9%-12%, and 15%-18%',
       intervals: [
-        { start: 0.08, end: 0.11 },
-        { start: 0.18, end: 0.21 },
-        { start: 0.30, end: 0.33 }
+        { start: 0.03, end: 0.06 },
+        { start: 0.09, end: 0.12 },
+        { start: 0.15, end: 0.18 }
       ]
     },
     'custom': {
       name: 'Custom Outages',
       desc: 'User specified interval list',
-      intervals: [{ start: 0.10, end: 0.15 }, { start: 0.25, end: 0.30 }]
+      intervals: [{ start: 0.04, end: 0.08 }, { start: 0.12, end: 0.16 }]
     }
   };
 

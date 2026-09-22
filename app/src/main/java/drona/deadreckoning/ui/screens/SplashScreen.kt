@@ -136,7 +136,7 @@ fun SplashScreen(
                 modifier = Modifier.padding(vertical = 2.dp)
             ) {
                 Text(
-                    text = "INTELLIGENT DEAD RECKONING PRO",
+                    text = "DRONA INTELLIGENT DEAD RECKONING",
                     color = Color(0xFF1D4ED8),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,

@@ -10,7 +10,7 @@ import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
 import java.io.File
 
 private const val TAG = "NavigationMapHolder"
-private const val APP_USER_AGENT = "DeadReckoningPro/1.0 (Android; drona.deadreckoning)"
+private const val APP_USER_AGENT = "DRONA/1.0 (Android; drona.deadreckoning)"
 
 /**
  * Singleton holder for the primary navigation MapView.

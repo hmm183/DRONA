@@ -19,7 +19,7 @@ class MainContainerActivity : ComponentActivity() {
         val tileCache = File(basePath, "tiles").apply { mkdirs() }
         config.osmdroidBasePath = basePath
         config.osmdroidTileCache = tileCache
-        config.userAgentValue = "DeadReckoningPro/1.0 (Android; drona.deadreckoning)"
+        config.userAgentValue = "DRONA/1.0 (Android; drona.deadreckoning)"
         config.tileFileSystemCacheMaxBytes = 300L * 1024 * 1024
         config.tileFileSystemCacheTrimBytes = 250L * 1024 * 1024
         config.cacheMapTileCount = 200.toShort()
