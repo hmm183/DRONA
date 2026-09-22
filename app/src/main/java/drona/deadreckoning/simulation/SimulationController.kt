@@ -119,9 +119,9 @@ class SimulationController(
     // Route caching for canonical routes
     companion object {
         val CANONICAL_ROUTES = listOf(
-            RouteOption("Mandadam ↔ Vijayawada", GeoPoint(16.5142, 80.5652), GeoPoint(16.5062, 80.6480)),
-            RouteOption("Mandadam ↔ VIT-AP", GeoPoint(16.5142, 80.5652), GeoPoint(16.4965, 80.5005)),
-            RouteOption("VIT-AP ↔ Mangalagiri", GeoPoint(16.4965, 80.5005), GeoPoint(16.4300, 80.5700))
+            RouteOption("Mandadam ↔ VIT-AP (Double Turn)", GeoPoint(16.5190, 80.5520), GeoPoint(16.4975, 80.5005)),
+            RouteOption("Mandadam ↔ Vijayawada", GeoPoint(16.5190, 80.5520), GeoPoint(16.5000, 80.6480)),
+            RouteOption("VIT-AP ↔ Mangalagiri", GeoPoint(16.4975, 80.5005), GeoPoint(16.4300, 80.5700))
         )
     }
 

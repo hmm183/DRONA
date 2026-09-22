@@ -35,10 +35,10 @@ data class SimulationConfig(
     val gnssNoiseStdMeters: Double = 2.2,
     val aiSpeedNoiseStdMps: Double = 0.35,
 
-    // Default route: Mandadam -> Vijayawada (True highway road endpoints)
-    val sourcePoint: GeoPoint = GeoPoint(16.5142, 80.5652),
-    val destinationPoint: GeoPoint = GeoPoint(16.5062, 80.6480),
-    val routeName: String = "Mandadam to Vijayawada"
+    // Default route: Mandadam -> VIT-AP (Double Turn road corridor)
+    val sourcePoint: GeoPoint = GeoPoint(16.5190, 80.5520),
+    val destinationPoint: GeoPoint = GeoPoint(16.4975, 80.5005),
+    val routeName: String = "Mandadam ↔ VIT-AP (Double Turn)"
 ) {
     companion object {
         val DEFAULT_MULTI_OUTAGES = listOf(
